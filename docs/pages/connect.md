@@ -1,5 +1,5 @@
 ---
-num: 5
+num: 6
 name: CONNECT
 title: Connect your agent
 slug: connect

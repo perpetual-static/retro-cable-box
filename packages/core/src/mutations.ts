@@ -7,7 +7,8 @@
  * the item on air keeps playing from the same spot.
  */
 
-import type { Bubble, Channel, ChannelKind, CardKind, Item, LineupState, Notice, ScheduleRules, Source, LiveInfo, InstalledPlugin } from './types';
+import type { Bubble, Channel, ChannelKind, CardKind, Item, LineupState, Notice, ScheduleRules, Source, LiveInfo, InstalledPlugin, ProgrammingBlock, BlockWindow } from './types';
+import { blockProblem } from './blocks';
 import { checkInstalled, PLUGIN_LIMITS } from './plugins';
 import { flatten, reanchor } from './schedule';
 
@@ -244,6 +245,46 @@ export function validateSetLive(c: Channel, a: SetLiveArgs): void {
 }
 export function setLive(c: Channel, a: SetLiveArgs): Channel {
 	return { ...cloneChannel(c), live: { ...c.live, ...a.live } };
+}
+
+// ── programming blocks ───────────────────────────────────────────────────────
+
+export const MAX_BLOCKS = 12;
+
+export interface SetBlockArgs {
+	block: ProgrammingBlock;
+}
+export function validateSetBlock(c: Channel, a: SetBlockArgs): void {
+	if (c.kind !== 'playlist') fail('blocks go on playlist channels');
+	const problem = a.block ? blockProblem(a.block) : 'block is required';
+	if (problem) fail(problem);
+	if (a.block.fromChannel === c.id) fail('a block plays another channel’s shows; fromChannel is this channel');
+	const others = (c.blocks ?? []).filter((b) => b.id !== a.block.id);
+	if (others.length >= MAX_BLOCKS) fail(`a channel holds at most ${MAX_BLOCKS} blocks`);
+}
+/** Add a block, or replace the one with the same id. Its armed windows are dropped so they re-arm with the new settings. */
+export function setBlock(c: Channel, a: SetBlockArgs): Channel {
+	const b: ProgrammingBlock = { ...a.block, ...(a.block.days ? { days: [...a.block.days].sort() } : {}) };
+	const blocks = [...(c.blocks ?? []).filter((x) => x.id !== b.id), b];
+	return { ...cloneChannel(c), blocks, windows: (c.windows ?? []).filter((w) => w.blockId !== b.id) };
+}
+export interface RemoveBlockArgs {
+	blockId: string;
+}
+export function validateRemoveBlock(c: Channel, a: RemoveBlockArgs): void {
+	if (!(c.blocks ?? []).some((b) => b.id === a.blockId)) fail(`no block "${a.blockId}" on ${c.id}`);
+}
+/** Remove a block. An airing in progress stops now; regular programming resumes. */
+export function removeBlock(c: Channel, a: RemoveBlockArgs): Channel {
+	return {
+		...cloneChannel(c),
+		blocks: (c.blocks ?? []).filter((b) => b.id !== a.blockId),
+		windows: (c.windows ?? []).filter((w) => w.blockId !== a.blockId)
+	};
+}
+/** The workflow's own bookkeeping: the armed windows after a wake. */
+export function setWindows(c: Channel, windows: BlockWindow[]): Channel {
+	return { ...cloneChannel(c), windows };
 }
 
 export interface SetBubblesArgs {

@@ -14,7 +14,8 @@
     "./client": "./src/client.ts",
     "./pairing": "./src/pairing.ts",
     "./live": "./src/live.ts",
-    "./plugins": "./src/plugins.ts"
+    "./plugins": "./src/plugins.ts",
+    "./blocks": "./src/blocks.ts"
   },
   "scripts": {
     "check": "tsc -p ."

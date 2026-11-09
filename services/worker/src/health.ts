@@ -5,10 +5,10 @@
 
 import { access } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import type { ChannelHealth } from '@box/core/activities';
+import type { ChannelHealth, Diagnosis } from '@box/core/activities';
 import type { Item, Source } from '@box/core/types';
 import { archiveMetadata, playableFiles } from '@box/core/archive';
-import { playableUrl } from '@box/core/schedule';
+import { airOrder, playableUrl } from '@box/core/schedule';
 import { channelHandle, queryChannel, queryLineup } from '@box/core/client';
 import { repairItems } from '@box/core/workflows';
 import { MEDIA_ROOT } from './config';
@@ -128,3 +128,22 @@ export async function checkChannel(channelId: string): Promise<ChannelHealth> {
 	}
 	return health;
 }
+
+/** The shows on a channel's regular loop, for a programming block to copy. */
+export async function showsForBlock(channelId: string): Promise<Item[]> {
+	try {
+		return airOrder(await queryChannel(channelId)).filter((i) => i.source.kind !== 'hls');
+	} catch {
+		return []; // the channel is gone
+	}
+}
+
+/** One item the TV could not play: reachable, found elsewhere, or gone? */
+export async function diagnoseItem(item: Item): Promise<Diagnosis> {
+	const r = await reachSource(item.source);
+	if (r === 'ok') return { verdict: 'ok' };
+	if (r === 'unsure') return { verdict: 'unsure' };
+	const fix = await macgyver(item);
+	return fix ? { verdict: 'repaired', ...fix } : { verdict: 'dead' };
+}
+

@@ -16,7 +16,7 @@ import { epgFor } from './epg.js';
 import { resolveStream } from '@box/core/plugins';
 import type { InstalledPlugin } from '@box/core/types';
 import { rewritePlaylist } from '@box/core/live';
-import { exportLineup, listChannels, queryLineup, unwrapError } from '@box/core/client';
+import { answerProposal, exportLineup, listChannels, queryLineup, reportPlaybackFailure, unwrapError } from '@box/core/client';
 
 const PORT = Number(process.env.API_PORT ?? 8760);
 const MEDIA_ROOT = resolve(process.env.MEDIA_ROOT ?? resolve(import.meta.dirname, '../../../media'));
@@ -41,6 +41,8 @@ export interface GuideData {
 	/** Live channels: the stream and whatever guide data has arrived. */
 	live: Record<string, { url: string | null; logo?: string; programs: EpgProgram[] }>;
 	notices: Awaited<ReturnType<typeof queryLineup>>['notices'];
+	/** Channels an agent proposed, waiting for OK on the TV. */
+	proposals: NonNullable<Awaited<ReturnType<typeof queryLineup>>['proposals']>;
 }
 
 let cache: { at: number; data: GuideData } | undefined;
@@ -55,6 +57,7 @@ async function load(): Promise<GuideData> {
 		boxName: lineup.boxName,
 		serverTime: Date.now() / 1000,
 		notices: lineup.notices,
+		proposals: lineup.proposals ?? [],
 		channels: channels.map((c) => ({ id: c.id, num: c.num, name: c.name, kind: c.kind, card: c.card, blurb: c.blurb, category: c.category })),
 		schedules: Object.fromEntries(channels.map((c) => [c.id, flatten(c)])),
 		live: Object.fromEntries(channels.filter((c) => c.kind === 'live').map((c) => [c.id, liveEntry(c)]))
@@ -172,6 +175,42 @@ app.get('/api/hls', async (req, res) => {
 			.send(rewritePlaylist(text, r.url, (abs) => `/api/hls?u=${encodeURIComponent(abs)}`));
 	} catch (err) {
 		res.status(502).json({ error: `stream did not answer: ${(err as Error).message}` });
+	}
+});
+
+/**
+ * The TV could not play an item. Its channel workflow checks the media and
+ * repairs or skips it (a signal; this returns at once). Reports for the same
+ * item are rate-limited here and in the workflow.
+ */
+const lastReport = new Map<string, number>();
+app.post('/api/report', express.json(), async (req, res) => {
+	const { channelId, itemId } = req.body ?? {};
+	if (typeof channelId !== 'string' || typeof itemId !== 'string') return void res.status(400).json({ error: 'channelId and itemId required' });
+	const key = `${channelId}/${itemId}`;
+	if (Date.now() - (lastReport.get(key) ?? 0) < 60_000) return void res.status(202).json({ ok: true, note: 'already reported' });
+	lastReport.set(key, Date.now());
+	try {
+		await reportPlaybackFailure(channelId, itemId);
+		res.status(202).json({ ok: true });
+	} catch (err) {
+		res.status(502).json({ error: unwrapError(err) });
+	}
+});
+
+/**
+ * The owner's answer to a proposed channel, from the TV remote. Agents cannot
+ * reach this: MCP has no tool for it, so a proposal needs a person at the TV.
+ */
+app.post('/api/proposals/:id', express.json(), async (req, res) => {
+	const approve = req.body?.approve;
+	if (typeof approve !== 'boolean') return void res.status(400).json({ error: 'approve (true or false) required' });
+	try {
+		const state = await answerProposal(req.params.id, approve);
+		cache = undefined; // the card comes down on the next guide load
+		res.json(state);
+	} catch (err) {
+		res.status(409).json({ error: unwrapError(err) });
 	}
 });
 

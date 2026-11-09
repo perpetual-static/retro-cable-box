@@ -8,12 +8,12 @@ import { promisify } from 'node:util';
 import { resolve, relative, isAbsolute, basename, extname } from 'node:path';
 import { ApplicationFailure } from '@temporalio/common';
 import type { BoxActivities, ResolvedItem } from '@box/core/activities';
-import type { SourceRequest } from '@box/core/types';
+import type { Channel, SourceRequest } from '@box/core/types';
 import { archiveMetadata, namedFile, playableFiles } from '@box/core/archive';
 
 import { MEDIA_ROOT } from './config';
-import { checkChannel, listChannelIds } from './health';
-import { updatePlugins } from '@box/core/client';
+import { checkChannel, diagnoseItem, listChannelIds, showsForBlock } from './health';
+import { createChannel, updatePlugins } from '@box/core/client';
 
 const run = promisify(execFile);
 
@@ -90,4 +90,15 @@ async function resolveSource(req: SourceRequest): Promise<ResolvedItem[]> {
 	return [{ ...base, title: req.title ?? 'LIVE', source: s, durationSec: req.durationSec ?? 0 }];
 }
 
-export const activities: BoxActivities = { resolveSource, listChannelIds, checkChannel, updatePlugins };
+/** Create a channel the owner approved on the TV. A taken id or number is final, not retried. */
+async function createApprovedChannel(channel: Channel): Promise<void> {
+	try {
+		await createChannel(channel);
+	} catch (err) {
+		const msg = (err as Error).message;
+		if (/taken|already/i.test(msg)) throw ApplicationFailure.create({ type: 'ChannelTaken', message: msg, nonRetryable: true });
+		throw err;
+	}
+}
+
+export const activities: BoxActivities = { resolveSource, listChannelIds, checkChannel, showsForBlock, diagnoseItem, createApprovedChannel, updatePlugins };

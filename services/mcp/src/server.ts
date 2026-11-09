@@ -18,6 +18,7 @@ import { join } from 'node:path';
 import { BoxOAuthProvider } from './oauth.js';
 import type { Channel, LineupFile, Notice, PluginManifest, SourceRequest } from '@box/core/types';
 import { checkInstalled, MANIFEST_FILE, resolveStream } from '@box/core/plugins';
+import { upcoming } from '@box/core/blocks';
 import { airings, anchorForItemAt, flatten, whatsOn } from '@box/core/schedule';
 import { archiveMetadata, playableFiles, searchArchive } from '@box/core/archive';
 import { channelKey, parseM3u, xmltvChannels, type M3uEntry, type M3uPlaylist } from '@box/core/live';
@@ -30,6 +31,8 @@ import {
 	getClient,
 	importLineup,
 	installPluginFrom,
+	proposeChannel,
+	proposalStatus,
 	installPluginManifest,
 	uninstallPlugin,
 	updatePlugins,
@@ -51,6 +54,8 @@ import {
 	setAnchor,
 	setBubbles,
 	setLive,
+	removeBlock,
+	setBlock,
 	setRules,
 	updateChannel
 } from '@box/core/workflows';
@@ -104,6 +109,9 @@ async function attempt(fn: () => Promise<CallToolResult>): Promise<CallToolResul
 
 const clock = (sec: number): string =>
 	new Date(sec * 1000).toLocaleString('en-US', { timeZone: TZ, weekday: 'short', hour: 'numeric', minute: '2-digit' });
+/** With the date, for things days or weeks ahead (block airings). */
+const dateClock = (sec: number): string =>
+	new Date(sec * 1000).toLocaleString('en-US', { timeZone: TZ, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 const mins = (sec: number): string => `${Math.round(sec / 60)} min`;
 const hours = (sec: number): string => `${(sec / 3600).toFixed(1)} h`;
 
@@ -120,6 +128,15 @@ function outline(c: Channel) {
 		blurb: c.blurb,
 		category: c.category,
 		rules: c.rules,
+		blocks: c.blocks?.length
+			? c.blocks.map((b) => ({
+					...b,
+					next: upcoming([b], Date.now() / 1000, 14)
+						.slice(0, 3)
+						.map((o) => `${dateClock(o.startsAt)} – ${clock(o.endsAt)}`)
+				}))
+			: undefined,
+		blockOnAir: (c.windows ?? []).find((w) => w.startsAt <= Date.now() / 1000 && Date.now() / 1000 < w.endsAt)?.name,
 		loop: hours(flat.totalSec),
 		onNow: now ? `${now.item.title} (${mins(now.offsetSec)} in, ends ${clock(now.endsAt)})` : null,
 		items: c.items.map((i, index) => ({
@@ -402,6 +419,94 @@ function buildServer(): McpServer {
 				}
 				return text(`Created channel ${channel.num} ${channel.name}.${report}\n\n${JSON.stringify(outline(await queryChannel(channel.id)), null, 2)}`);
 			})
+	);
+
+	server.registerTool(
+		'set_block',
+		{
+			title: 'Set programming block',
+			description:
+				'At set times, another channel\'s shows air on this channel: "Saturday-morning cartoons on 3 from 7 to 11 every Saturday", ' +
+				'"a Halloween takeover of channel 2 on October 31". Give days (0 = Sunday … 6 = Saturday) for a weekly block, or one date. ' +
+				'The channel workflow arms each airing 6 hours ahead (it shows on the guide then), copies and shuffles the shows at that moment, ' +
+				'announces the block when it starts, and returns to regular programming (in progress) when it ends. It survives restarts: ' +
+				'a box that was off catches up. Setting a block with an existing id replaces it.',
+			inputSchema: {
+				id: channelId,
+				block: z.object({
+					id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).describe('Block slug, e.g. "saturday-toons"'),
+					name: z.string().min(1).max(24).describe('UPPERCASE name for the guide and the start notice'),
+					fromChannel: z.string().describe('Channel id whose shows air in the block'),
+					days: z.array(z.number().int().min(0).max(6)).optional(),
+					date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe('YYYY-MM-DD for a one-off block'),
+					start: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).describe('Local start time, HH:MM 24-hour'),
+					durationMin: z.number().int().min(15).max(1440),
+					tz: z.string().optional().describe(`IANA time zone; default the box's (${TZ})`),
+					shuffle: z.boolean().optional().describe('Shuffle the shows for each airing (default true)')
+				})
+			}
+		},
+		async ({ id, block }) =>
+			attempt(async () => {
+				const c = await (await channelHandle(id)).executeUpdate(setBlock, { args: [{ block: { ...block, tz: block.tz ?? TZ } }] });
+				return text(outline(c));
+			})
+	);
+
+	server.registerTool(
+		'remove_block',
+		{ title: 'Remove programming block', description: 'Remove a block. An airing in progress stops now and regular programming resumes.', inputSchema: { id: channelId, blockId: z.string() } },
+		async ({ id, blockId }) =>
+			attempt(async () => text(outline(await (await channelHandle(id)).executeUpdate(removeBlock, { args: [{ blockId }] }))))
+	);
+
+	server.registerTool(
+		'propose_channel',
+		{
+			title: 'Propose channel',
+			description:
+				'Propose a new channel for the owner to approve on the TV. The box resolves the sources, then shows a card on the TV: ' +
+				'OK on the remote adds the channel, BACK declines it. The proposal waits up to `expiresInHours` (default 72). ' +
+				'You cannot approve it yourself; use proposal_status to see the answer. Use this when the owner wants to approve channels, ' +
+				'or when you are suggesting something they did not ask for; use create_channel when they asked for the channel directly.',
+			inputSchema: {
+				id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).describe('Slug, e.g. "saturday-toons"'),
+				num: z.number().int().min(1).max(999).describe('Guide number; must be free'),
+				name: z.string().min(1).max(24).describe('UPPERCASE guide name, ≤ 16 chars looks best'),
+				blurb: z.string().max(140).optional(),
+				category: z.string().max(24).optional(),
+				shuffleSeed: z.number().int().optional(),
+				sources: z.array(sourceRequestSchema).min(1),
+				expiresInHours: z.number().min(0.05).max(24 * 30).default(72),
+				from: z.string().max(40).optional().describe('Your name as the owner should see it, e.g. "Claude"')
+			}
+		},
+		async (input) =>
+			attempt(async () => {
+				const channel = channelFromFile({
+					id: input.id,
+					num: input.num,
+					name: input.name,
+					blurb: input.blurb,
+					category: input.category,
+					rules: input.shuffleSeed === undefined ? undefined : { shuffleSeed: input.shuffleSeed }
+				});
+				await proposeChannel(channel, input.sources as SourceRequest[], { expiresInSec: Math.round(input.expiresInHours * 3600), from: input.from });
+				return text(
+					`Proposed ${input.num} ${input.name}. The box is resolving the shows; then a card appears on the TV. ` +
+						`OK on the remote adds it, BACK declines. Check with proposal_status("${input.id}").`
+				);
+			})
+	);
+
+	server.registerTool(
+		'proposal_status',
+		{
+			title: 'Proposal status',
+			description: 'Where a proposed channel stands: resolving, waiting (on the TV), approved, declined, expired or failed.',
+			inputSchema: { id: z.string() }
+		},
+		async ({ id }) => attempt(async () => text(await proposalStatus(id)))
 	);
 
 	server.registerTool(

@@ -64,6 +64,42 @@ export interface ScheduleRules {
 	shuffleSeed?: number;
 }
 
+/**
+ * A programming block: at set times, another channel's shows air on this
+ * channel (e.g. Saturday-morning cartoons 7–11, a Halloween takeover). The
+ * channel workflow arms each occurrence with a durable timer (see blocks.ts).
+ */
+export interface ProgrammingBlock {
+	id: string;
+	/** Shown on the guide and in the start notice, e.g. "SATURDAY MORNING". */
+	name: string;
+	/** The channel whose shows air in the block. Copied when the block is armed. */
+	fromChannel: string;
+	/** Days of the week, 0 = Sunday … 6 = Saturday. Give this or `date`. */
+	days?: number[];
+	/** One date, YYYY-MM-DD (a one-off block, e.g. a premiere night). */
+	date?: string;
+	/** Local start time, HH:MM (24-hour). */
+	start: string;
+	durationMin: number;
+	/** IANA time zone for `start` and `days`, e.g. "America/New_York". */
+	tz: string;
+	/** Shuffle the shows for each airing (default true). */
+	shuffle?: boolean;
+}
+
+/** One armed occurrence of a block: its own copy of the shows, for its time. */
+export interface BlockWindow {
+	/** blockId + start, e.g. "sat-toons@1794326400". */
+	key: string;
+	blockId: string;
+	name: string;
+	startsAt: number;
+	endsAt: number;
+	items: Item[];
+	announced?: boolean;
+}
+
 export interface Channel {
 	/** Stable slug, e.g. "toon-lab". */
 	id: string;
@@ -80,6 +116,9 @@ export interface Channel {
 	items: Item[];
 	rules?: ScheduleRules;
 	live?: LiveInfo;
+	blocks?: ProgrammingBlock[];
+	/** Armed block occurrences (the channel workflow keeps these). */
+	windows?: BlockWindow[];
 }
 
 export interface Notice {
@@ -129,6 +168,21 @@ export interface InstalledPlugin {
 	updatedAt: number;
 }
 
+/** A channel an agent proposed, waiting for the owner's OK on the TV. */
+export interface ProposalSummary {
+	id: string;
+	num: number;
+	name: string;
+	blurb?: string;
+	/** Who asked, if the agent said (e.g. the agent app's name). */
+	from?: string;
+	items: number;
+	totalSec: number;
+	/** The first few titles, for the card on the TV. */
+	titles: string[];
+	expiresAt: number;
+}
+
 /** Box-level state held by the lineup workflow. */
 export interface LineupState {
 	boxName: string;
@@ -137,6 +191,8 @@ export interface LineupState {
 	notices: Notice[];
 	/** Plugins an agent installed (absent on boxes from before plugins). */
 	plugins?: InstalledPlugin[];
+	/** Proposed channels waiting for the owner's OK on the TV. */
+	proposals?: ProposalSummary[];
 }
 
 /** Portable lineup file: what export/import and the starter pack use. */

@@ -39,6 +39,17 @@ is in `docs/_site`.
   Register the repo with `install_plugin`; the box creates the channels and
   installs new GitHub releases of the repo every night. See
   [Plugins](#plugins).
+- **Programming blocks.** `set_block`: at set times another channel's shows
+  air on a channel (Saturday-morning cartoons 7–11, a Halloween takeover).
+  The channel workflow's durable timers arm each airing 6 hours ahead (it
+  shows on the guide), announce it at the start, and return to regular
+  programming, in progress, at the end. A box that was off catches up.
+- **Self-repair from the TV.** When a video will not play, the TV signals its
+  channel. The workflow checks the media with an activity, swaps in the same
+  film from elsewhere or skips it, and posts a notice.
+- **Approval on the TV.** `propose_channel` puts a card on the TV; OK adds
+  the channel, BACK declines, and it expires after 72 hours. Only the TV can
+  answer (the API's `/api/proposals/:id`; MCP has no tool for it).
 - **Pairing for agent apps.** When the box has a public URL, an agent app
   that signs in with OAuth (for example, a claude.ai custom connector) pairs
   with the 6-digit code on channel 0.

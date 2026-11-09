@@ -1,5 +1,5 @@
 ---
-num: 6
+num: 7
 name: PLUGINS
 title: Plugins
 slug: plugins

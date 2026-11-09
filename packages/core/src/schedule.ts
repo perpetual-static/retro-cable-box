@@ -29,6 +29,21 @@ export interface FlatSchedule {
 	/** Length of one full loop, seconds. 0 means nothing can air. */
 	totalSec: number;
 	items: ScheduledItem[];
+	/**
+	 * Programming blocks the channel workflow has armed: stretches of time
+	 * where another loop airs instead (sorted, no overlaps). Outside them the
+	 * regular loop airs, already in progress, like real TV.
+	 */
+	windows?: ScheduleWindow[];
+}
+
+export interface ScheduleWindow {
+	blockId: string;
+	name: string;
+	startsAt: number;
+	endsAt: number;
+	/** The block's own loop, anchored at startsAt so it opens with its first item. */
+	flat: FlatSchedule;
 }
 
 export interface Airing {
@@ -88,7 +103,7 @@ export function airOrder(channel: Pick<Channel, 'items' | 'rules'>): Item[] {
 	return seed === undefined ? ready : seededShuffle(ready, seed);
 }
 
-export function flatten(channel: Pick<Channel, 'id' | 'anchorEpoch' | 'items' | 'rules'>): FlatSchedule {
+export function flatten(channel: Pick<Channel, 'id' | 'anchorEpoch' | 'items' | 'rules' | 'windows'>): FlatSchedule {
 	let start = 0;
 	const items: ScheduledItem[] = airOrder(channel).map((i) => {
 		const s: ScheduledItem = {
@@ -104,8 +119,24 @@ export function flatten(channel: Pick<Channel, 'id' | 'anchorEpoch' | 'items' | 
 		start += i.durationSec;
 		return s;
 	});
-	return { channelId: channel.id, anchorEpoch: channel.anchorEpoch, totalSec: start, items };
+	const flat: FlatSchedule = { channelId: channel.id, anchorEpoch: channel.anchorEpoch, totalSec: start, items };
+	const windows = (channel.windows ?? [])
+		.filter((w) => w.endsAt > w.startsAt)
+		.map((w) => ({
+			blockId: w.blockId,
+			name: w.name,
+			startsAt: w.startsAt,
+			endsAt: w.endsAt,
+			flat: flatten({ id: channel.id, anchorEpoch: w.startsAt, items: w.items })
+		}))
+		.filter((w) => w.flat.totalSec > 0)
+		.sort((a, b) => a.startsAt - b.startsAt);
+	if (windows.length) flat.windows = windows;
+	return flat;
 }
+
+/** The loop without its block windows (re-anchoring works on the regular loop only). */
+export const baseLoop = (flat: FlatSchedule): FlatSchedule => (flat.windows ? { ...flat, windows: undefined } : flat);
 
 /** Position within the loop at `nowSec`, always in [0, totalSec). */
 export function loopPosition(flat: FlatSchedule, nowSec: number): number {
@@ -125,8 +156,33 @@ function indexAt(flat: FlatSchedule, pos: number): number {
 	return lo;
 }
 
-/** What is on at `nowSec`, or null if the channel has nothing to air. */
+/**
+ * What is on at `nowSec`, or null if the channel has nothing to air. Inside a
+ * block window the block's loop airs; an airing that runs into a window edge
+ * is cut at the edge (startsAt / endsAt), and offsetSec stays the offset into
+ * the file.
+ */
 export function whatsOn(flat: FlatSchedule, nowSec: number): Airing | null {
+	const ws = flat.windows;
+	if (!ws?.length) return loopAt(flat, nowSec);
+	const w = ws.find((x) => x.startsAt <= nowSec && nowSec < x.endsAt);
+	if (w) {
+		const a = loopAt(w.flat, nowSec);
+		if (a) return clip(a, w.startsAt, w.endsAt);
+	}
+	const a = loopAt(flat, nowSec);
+	if (!a) return null;
+	const before = ws.filter((x) => x.endsAt <= nowSec).reduce((m, x) => Math.max(m, x.endsAt), -Infinity);
+	const after = ws.filter((x) => x.startsAt > nowSec).reduce((m, x) => Math.min(m, x.startsAt), Infinity);
+	return clip(a, before, after);
+}
+
+function clip(a: Airing, from: number, until: number): Airing {
+	if (a.startsAt >= from && a.endsAt <= until) return a;
+	return { ...a, startsAt: Math.max(a.startsAt, from), endsAt: Math.min(a.endsAt, until) };
+}
+
+function loopAt(flat: FlatSchedule, nowSec: number): Airing | null {
 	if (flat.totalSec <= 0 || flat.items.length === 0) return null;
 	const pos = loopPosition(flat, nowSec);
 	const index = indexAt(flat, pos);
@@ -142,15 +198,18 @@ export function whatsOn(flat: FlatSchedule, nowSec: number): Airing | null {
  * produce an unbounded list.
  */
 export function airings(flat: FlatSchedule, fromSec: number, untilSec: number, max = 500): Airing[] {
-	const first = whatsOn(flat, fromSec);
-	if (!first) return [];
-	const out: Airing[] = [first];
-	let { index, endsAt } = first;
-	while (endsAt < untilSec && out.length < max) {
-		index = (index + 1) % flat.items.length;
-		const item = flat.items[index];
-		out.push({ index, item, offsetSec: 0, startsAt: endsAt, endsAt: endsAt + item.durationSec });
-		endsAt += item.durationSec;
+	const out: Airing[] = [];
+	let t = fromSec;
+	while (t < untilSec && out.length < max) {
+		const a = whatsOn(flat, t);
+		if (!a) break;
+		// Rounding can put t a hair before an item boundary: step over the sliver.
+		if (a.endsAt - t < 1e-3) {
+			t = a.endsAt + 1e-3;
+			continue;
+		}
+		out.push(a);
+		t = a.endsAt;
 	}
 	return out;
 }
@@ -160,7 +219,9 @@ export function airings(flat: FlatSchedule, fromSec: number, untilSec: number, m
  * keeps playing from the same spot. If that item was removed, the item that
  * now sits in its position starts from the top at `nowSec`.
  */
-export function reanchor(before: FlatSchedule, after: FlatSchedule, nowSec: number): number {
+export function reanchor(beforeFlat: FlatSchedule, afterFlat: FlatSchedule, nowSec: number): number {
+	const before = baseLoop(beforeFlat);
+	const after = baseLoop(afterFlat);
 	if (after.totalSec <= 0) return nowSec;
 	const current = whatsOn(before, nowSec);
 	let anchor: number;

@@ -3,7 +3,7 @@
  * server's time, so every TV on the box agrees on what is on.
  */
 
-import { airings, liveAirings, type Airing, type EpgProgram, type FlatSchedule } from '@box/core';
+import { airings, liveAirings, type Airing, type EpgProgram, type FlatSchedule, type ProposalSummary } from '@box/core';
 
 export interface GuideChannel {
 	id: string;
@@ -31,6 +31,8 @@ export interface GuideData {
 	/** Live channels: stream URL and guide data (programs). */
 	live?: Record<string, { url: string | null; logo?: string; programs: EpgProgram[] }>;
 	notices: Notice[];
+	/** Channels an agent proposed, waiting for OK on the TV. */
+	proposals?: ProposalSummary[];
 }
 
 const POLL_MS = 10_000;

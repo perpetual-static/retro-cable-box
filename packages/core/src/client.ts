@@ -10,6 +10,12 @@ import {
 	CHANNEL_WORKFLOW_TYPE,
 	LINEUP_WORKFLOW_ID,
 	addChannel,
+	decideProposal,
+	getProposal,
+	playbackFailed,
+	proposalWorkflow,
+	proposalWorkflowId,
+	type ProposalState,
 	installPlugin as installPluginUpdate,
 	removePlugin as removePluginUpdate,
 	addItems,
@@ -341,3 +347,38 @@ export async function updatePlugins(): Promise<Array<{ id: string; action: strin
 	}
 	return out;
 }
+
+// ── proposals and playback reports ───────────────────────────────────────────
+
+/**
+ * Propose a channel: the owner approves it on the TV. Returns at once; the
+ * proposal workflow resolves the shows and waits for the remote.
+ */
+export async function proposeChannel(channel: Channel, sources: SourceRequest[], opts: { expiresInSec?: number; from?: string } = {}): Promise<void> {
+	assertChannel(channel);
+	const existing = await listChannels();
+	const clash = existing.find((c) => c.num === channel.num || c.id === channel.id);
+	if (clash) throw new Error(`channel ${clash.num} (${clash.id}) is taken; pick a free number and id`);
+	const client = await getClient();
+	await client.workflow.start(proposalWorkflow, {
+		taskQueue: TASK_QUEUE,
+		workflowId: proposalWorkflowId(channel.id),
+		args: [{ channel, sources, expiresInSec: opts.expiresInSec ?? 3 * 86_400, from: opts.from }],
+		workflowIdConflictPolicy: 'FAIL'
+	});
+}
+
+export async function proposalStatus(id: string): Promise<ProposalState> {
+	return (await getClient()).workflow.getHandle(proposalWorkflowId(id)).query(getProposal);
+}
+
+/** The owner's answer from the TV. Only the box API calls this, never MCP. */
+export async function answerProposal(id: string, approve: boolean): Promise<ProposalState> {
+	return (await getClient()).workflow.getHandle(proposalWorkflowId(id)).executeUpdate(decideProposal, { args: [{ approve }] });
+}
+
+/** The TV could not play an item: tell its channel (fire and forget). */
+export async function reportPlaybackFailure(channelId: string, itemId: string): Promise<void> {
+	await (await channelHandle(channelId)).signal(playbackFailed, { itemId });
+}
+

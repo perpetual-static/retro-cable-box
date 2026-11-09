@@ -21,6 +21,7 @@
 	import Cards from '$lib/components/Cards.svelte';
 	import Setec from '$lib/components/Setec.svelte';
 	import Setup from '$lib/components/Setup.svelte';
+	import Proposal from '$lib/components/Proposal.svelte';
 
 	// ── persisted preferences (best effort; private windows may refuse) ─────
 	const store = {
@@ -65,6 +66,30 @@
 	let digits = $state('');
 	let setec = $state(false);
 	let setup = $state(false);
+
+	// ── proposals: the owner says yes or no on the TV ───────────────────────
+	let answering = $state(false);
+	let answerError = $state<string | null>(null);
+	const proposal = $derived(powered ? (guide.data?.proposals?.[0] ?? null) : null);
+	async function answer(approve: boolean): Promise<void> {
+		if (!proposal || answering) return;
+		answering = true;
+		answerError = null;
+		blip(approve ? 880 : 330);
+		try {
+			const res = await fetch(`/api/proposals/${encodeURIComponent(proposal.id)}`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ approve })
+			});
+			if (!res.ok) answerError = ((await res.json().catch(() => ({}))) as { error?: string }).error ?? `HTTP ${res.status}`;
+			await guide.refresh();
+		} catch (err) {
+			answerError = (err as Error).message;
+		} finally {
+			answering = false;
+		}
+	}
 	/** On the box, Chromium opens the TV with ?kiosk: it turns on by itself. */
 	const kiosk = typeof location !== 'undefined' && new URLSearchParams(location.search).has('kiosk');
 	let muted = $state(store.get('muted') === '1');
@@ -275,6 +300,14 @@
 
 	function onVideoError(): void {
 		if (!loadedUrl) return;
+		// Tell the channel: its workflow checks the media and repairs or skips the item.
+		if (current?.kind === 'playlist' && airing) {
+			void fetch('/api/report', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ channelId: current.id, itemId: airing.item.id })
+			}).catch(() => {});
+		}
 		screen = 'standby';
 		loadedUrl = '';
 		retryTimer = setTimeout(play, 10_000);
@@ -362,6 +395,13 @@
 			return;
 		}
 		if (setec) return;
+		if (proposal) {
+			// The card is modal: OK adds the channel, BACK declines it.
+			e.preventDefault();
+			if (e.key === 'Enter') void answer(true);
+			else if (e.key === 'Escape' || e.key === 'Backspace') void answer(false);
+			return;
+		}
 		if (setup) {
 			e.preventDefault();
 			setup = false;
@@ -640,6 +680,10 @@
 
 	{#if setup}
 		<Setup />
+	{/if}
+
+	{#if proposal}
+		<Proposal {proposal} busy={answering} error={answerError} onanswer={(a) => void answer(a)} />
 	{/if}
 
 	{#if crt}<div class="scanlines" aria-hidden="true"></div>{/if}

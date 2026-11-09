@@ -3,7 +3,7 @@
  * these types (through proxyActivities).
  */
 
-import type { Item, SourceRequest } from './types';
+import type { Channel, Item, Source, SourceRequest } from './types';
 
 /** An item before it gets an id. */
 export type ResolvedItem = Omit<Item, 'id'>;
@@ -26,6 +26,18 @@ export interface BoxActivities {
 	 */
 	checkChannel(channelId: string): Promise<ChannelHealth>;
 
+	/** The shows that air on a channel now (its regular loop), for a block to copy. [] if the channel is gone. */
+	showsForBlock(channelId: string): Promise<Item[]>;
+
+	/**
+	 * One item that a TV could not play: can its media be reached, and if not,
+	 * can it be found somewhere else ("MacGyver")? Changes nothing itself.
+	 */
+	diagnoseItem(item: Item): Promise<Diagnosis>;
+
+	/** Create a channel the owner approved on the TV. Fails (not retried) when its id or number is taken. */
+	createApprovedChannel(channel: Channel): Promise<void>;
+
 	/** Install new GitHub releases of the installed plugins (see client.updatePlugins). */
 	updatePlugins(): Promise<PluginUpdate[]>;
 }
@@ -47,4 +59,11 @@ export interface ChannelHealth {
 	revived: string[];
 	/** Could not tell (timeouts, 5xx): left alone until the next check. */
 	unsure: number;
+}
+
+export interface Diagnosis {
+	/** ok: the media answers (the TV had a hiccup). repaired: found elsewhere. dead: gone. unsure: could not tell. */
+	verdict: 'ok' | 'repaired' | 'dead' | 'unsure';
+	source?: Source;
+	durationSec?: number;
 }
