@@ -19,6 +19,19 @@ things:
   services need a new session on every tune, or the picture drifts away from
   the guide.
 
+## Official channel packs
+
+Public-domain channel packs from the Retro Cable Box team. Every item in
+them is in the public domain, and each pack's README lists its sources.
+
+| Pack | Channels | Install |
+| --- | --- | --- |
+| [Space](https://github.com/perpetual-static/pack-space) | 20 SPACE RACE · 21 SKYLAB & SHUTTLE (NASA films) | `perpetual-static/pack-space` |
+| [Prelinger](https://github.com/perpetual-static/pack-prelinger) | 30 DRIVER'S ED · 31 TOMORROWLAND · 32 SOCIAL GUIDANCE | `perpetual-static/pack-prelinger` |
+| [Late Show](https://github.com/perpetual-static/pack-late-show) | 40 NOIR AFTER DARK · 41 SILENT SCREAMS · 42 FRIGHT NIGHT | `perpetual-static/pack-late-show` |
+
+Ask your agent: *"Install the plugin from perpetual-static/pack-late-show."*
+
 ## Install a plugin
 
 Ask your agent:
