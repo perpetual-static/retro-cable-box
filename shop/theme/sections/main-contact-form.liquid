@@ -8,9 +8,6 @@
 
   {%- comment -%} Hero block — chapter ornament + heading + intro {%- endcomment -%}
   <div class="hij-contact__hero">
-    <div class="hij-contact__chapter" aria-hidden="true">
-      {{ 'ornament-chapter.svg' | inline_asset_content }}
-    </div>
 
     <h1 class="hij-contact__heading">Support &amp; returns</h1>
 
@@ -22,9 +19,6 @@
   </div>
 
   {%- comment -%} Diamond rule between hero and body {%- endcomment -%}
-  <div class="hij-contact__rule" aria-hidden="true">
-    {{ 'ornament-rule-diamond.svg' | inline_asset_content }}
-  </div>
 
   {%- comment -%} Two-column body {%- endcomment -%}
   <div class="hij-contact__body">
@@ -43,9 +37,6 @@
 
         {%- if form.posted_successfully? -%}
           <div class="hij-contact__success" role="status" tabindex="-1" autofocus>
-            <div class="hij-contact__success-ornament" aria-hidden="true">
-              {{ 'ornament-diamond.svg' | inline_asset_content }}
-            </div>
             {{ 'templates.contact.form.post_success' | t }}
           </div>
         {%- elsif form.errors -%}
@@ -154,14 +145,7 @@
     <aside class="hij-contact__info-col">
       <div class="hij-contact__info-card">
         {%- comment -%} Corner ornaments {%- endcomment -%}
-        <span class="hij-contact__corner hij-contact__corner--tl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
-        <span class="hij-contact__corner hij-contact__corner--tr" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
-        <span class="hij-contact__corner hij-contact__corner--bl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
-        <span class="hij-contact__corner hij-contact__corner--br" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
 
-        <div class="hij-contact__info-chapter" aria-hidden="true">
-          {{ 'ornament-chapter.svg' | inline_asset_content }}
-        </div>
 
         <h2 class="hij-contact__info-heading font-smcp">How we help</h2>
 

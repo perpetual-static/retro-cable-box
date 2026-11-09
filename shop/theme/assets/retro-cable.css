@@ -269,3 +269,56 @@ h3,
 .footer .rte a {
 	color: var(--rcb-yellow);
 }
+
+/* ── no fantasy ornaments: cards are guide panels ────────────────────── */
+[class*='__ornament'],
+[class*='__corner'],
+[class*='__chapter'],
+.hij-contact__rule,
+.hij-contact__success-ornament,
+.pw-gate__rule,
+.err404__rule,
+.about-page__chapter {
+	display: none !important;
+}
+.hij-contact__info-card,
+.product-specs,
+.pw-gate,
+.err404 {
+	background: linear-gradient(180deg, rgba(14, 28, 120, 0.96), rgba(6, 12, 60, 0.96)) !important;
+	border: 0.3rem solid var(--rcb-edge) !important;
+	box-shadow: 0 0 0 0.3rem #000, 0 1.2rem 3rem rgba(0, 0, 0, 0.5) !important;
+	border-radius: 0 !important;
+}
+.hij-contact__info-card {
+	padding: 2.4rem 2.6rem !important;
+}
+.hij-contact__info-heading,
+.product-specs h2,
+.product-specs__heading {
+	font-family: var(--rcb-osd-font) !important;
+	font-size: 2.4rem !important;
+	font-variant: normal !important;
+	letter-spacing: 0.1em !important;
+	text-transform: uppercase;
+	text-align: left !important;
+	color: var(--rcb-osd) !important;
+	text-shadow: 0 0 0.6rem var(--rcb-osd-glow) !important;
+	margin: 0 0 1.4rem !important;
+}
+.hij-contact__info-row {
+	border-color: var(--rcb-grid) !important;
+}
+.hij-contact__info-key {
+	font-family: var(--font-heading-family) !important;
+	font-size: 1.3rem !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase;
+	color: var(--rcb-yellow) !important;
+}
+.hij-contact__info-val {
+	color: var(--rcb-white) !important;
+}
+.hij-contact__heading {
+	margin-top: 0 !important;
+}

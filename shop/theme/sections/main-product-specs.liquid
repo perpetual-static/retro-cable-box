@@ -53,18 +53,11 @@
     <div class="product-specs__inner">
 
       {%- comment -%} Chapter ornament above the heading {%- endcomment -%}
-      <div class="product-specs__chapter-ornament" aria-hidden="true">
-        {{ 'ornament-chapter.svg' | inline_asset_content }}
-      </div>
 
       <h2 class="product-specs__heading">Specifications</h2>
 
       {%- comment -%} Framed card with corner ornaments {%- endcomment -%}
       <div class="product-specs__card">
-        <span class="product-specs__corner product-specs__corner--tl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
-        <span class="product-specs__corner product-specs__corner--tr" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
-        <span class="product-specs__corner product-specs__corner--bl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
-        <span class="product-specs__corner product-specs__corner--br" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
 
         <dl class="product-specs__list">
           {%- if has_print_time -%}
