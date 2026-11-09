@@ -3,7 +3,7 @@
  * ingest activity and the MCP `search_archive` tool. Not imported by workflows.
  */
 
-const UA = 'retro-cable-box/0.1 (+https://github.com/rossnelson/myvoiceismypassport)';
+const UA = 'retro-cable-box/0.1 (+https://github.com/perpetual-static/retro-cable-box)';
 
 export interface ArchiveFile {
 	name: string;

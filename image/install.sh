@@ -2,7 +2,7 @@
 # Turn a fresh Raspberry Pi OS Lite (64-bit, Bookworm or later) into a Retro
 # Cable Box. Safe to run again: every step checks before it acts.
 #
-#   curl -fsSL https://raw.githubusercontent.com/rossnelson/myvoiceismypassport/main/image/install.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/perpetual-static/retro-cable-box/main/image/install.sh | sudo bash
 #   # or, from a clone:
 #   sudo ./image/install.sh
 #
@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-BOX_REPO="${BOX_REPO:-https://github.com/rossnelson/myvoiceismypassport.git}"
+BOX_REPO="${BOX_REPO:-https://github.com/perpetual-static/retro-cable-box.git}"
 BOX_REF="${BOX_REF:-main}"
 BOX_DIR="${BOX_DIR:-/opt/retro-cable-box}"
 BOX_DATA="${BOX_DATA:-/var/lib/box}"

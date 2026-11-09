@@ -74,4 +74,4 @@ The **licensor** is the individual or entity offering these terms, and the **sof
 
 ---
 
-Required Notice: Copyright 2026 Ross Nelson (https://github.com/rossnelson/myvoiceismypassport)
+Required Notice: Copyright 2026 Ross Nelson (https://github.com/perpetual-static/retro-cable-box)

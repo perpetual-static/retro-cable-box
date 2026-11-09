@@ -18,7 +18,7 @@
           "type": "text",
           "settings": {
             "heading": "Support & returns",
-            "subtext": "<p>A box that needs help, a return, or a question about an order: <a href=\"/pages/contact\">contact us</a>. Setup guides and docs: <a href=\"https://rossnelson.github.io/myvoiceismypassport/\">retro cable box docs</a>.</p>"
+            "subtext": "<p>A box that needs help, a return, or a question about an order: <a href=\"/pages/contact\">contact us</a>. Setup guides and docs: <a href=\"https://perpetual-static.github.io/retro-cable-box/\">retro cable box docs</a>.</p>"
           }
         }
       },

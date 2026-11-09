@@ -29,7 +29,7 @@ From your laptop:
 
 ```sh
 ssh box@retrocable.local
-curl -fsSL https://raw.githubusercontent.com/rossnelson/myvoiceismypassport/main/image/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/perpetual-static/retro-cable-box/main/image/install.sh | sudo bash
 ```
 
 The install takes about 10 minutes on a Pi 5 and does these things:

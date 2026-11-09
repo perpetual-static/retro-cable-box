@@ -1,4 +1,4 @@
-# myvoiceismypassport — Retro Cable Box
+# Retro Cable Box
 
 A Raspberry Pi box that turns media you point it at into a 24/7 retro cable
 lineup: a 90s-style channel guide, channels on a shared clock (you tune in
@@ -211,7 +211,7 @@ See [image/README.md](image/README.md). In short: flash Raspberry Pi OS Lite
 
 ```sh
 ssh box@retrocable.local
-curl -fsSL https://raw.githubusercontent.com/rossnelson/myvoiceismypassport/main/image/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/perpetual-static/retro-cable-box/main/image/install.sh | sudo bash
 ```
 
 ## Checks

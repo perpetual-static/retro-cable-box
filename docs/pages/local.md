@@ -50,8 +50,8 @@ with Ubuntu, then follow the Linux steps in the Ubuntu window.
 ## 2. Get the code and start it
 
 ```sh
-git clone https://github.com/rossnelson/myvoiceismypassport.git
-cd myvoiceismypassport
+git clone https://github.com/perpetual-static/retro-cable-box.git
+cd retro-cable-box
 task dev
 ```
 

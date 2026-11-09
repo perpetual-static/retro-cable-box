@@ -15,7 +15,7 @@ import { MEDIA_ROOT } from './config';
 
 type Reach = 'ok' | 'gone' | 'unsure';
 
-const UA = 'retro-cable-box/0.1 (+https://github.com/rossnelson/myvoiceismypassport)';
+const UA = 'retro-cable-box/0.1 (+https://github.com/perpetual-static/retro-cable-box)';
 
 /** Can a URL be fetched? 404/410 means gone; timeouts and 5xx mean "ask again tomorrow". */
 export async function reach(url: string): Promise<Reach> {

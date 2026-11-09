@@ -1004,7 +1004,7 @@ if (oauth && PUBLIC_MCP_URL) {
 			issuerUrl: new URL(PUBLIC_MCP_URL.origin),
 			resourceServerUrl: PUBLIC_MCP_URL,
 			resourceName: 'Retro Cable Box',
-			serviceDocumentationUrl: new URL('https://github.com/rossnelson/myvoiceismypassport#readme')
+			serviceDocumentationUrl: new URL('https://github.com/perpetual-static/retro-cable-box#readme')
 		})
 	);
 	app.use(oauth.pairRouter());

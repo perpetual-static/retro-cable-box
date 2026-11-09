@@ -64,7 +64,7 @@ Turn it on with `sudo systemctl enable --now box-led`.
   M, B, C, S.
 
 > **License.** Build a box for yourself, change it, share your changes. The
-> project is under the [PolyForm Noncommercial](https://github.com/rossnelson/myvoiceismypassport/blob/main/LICENSE.md)
+> project is under the [PolyForm Noncommercial](https://github.com/perpetual-static/retro-cable-box/blob/main/LICENSE.md)
 > license: selling boxes needs the author's permission.
 
 > **Status.** The software install is tested in an arm64 Debian container.
