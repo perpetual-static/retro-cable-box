@@ -14,36 +14,20 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "footer-0": {
-          "type": "link_list",
-          "settings": {
-            "heading": "Quick links",
-            "menu": "footer"
-          }
-        },
-        "footer-1": {
-          "type": "link_list",
-          "settings": {
-            "heading": "Info",
-            "menu": "footer"
-          }
-        },
-        "footer-2": {
+        "support": {
           "type": "text",
           "settings": {
-            "heading": "The box",
-            "subtext": "<p>A retro cable box for your TV, programmed by your AI agent. Open hardware and software: <a href=\"https://rossnelson.github.io/myvoiceismypassport/\">build guide and docs</a>.</p>"
+            "heading": "Support & returns",
+            "subtext": "<p>A box that needs help, a return, or a question about an order: <a href=\"/pages/contact\">contact us</a>. Setup guides and docs: <a href=\"https://rossnelson.github.io/myvoiceismypassport/\">retro cable box docs</a>.</p>"
           }
         }
       },
       "block_order": [
-        "footer-0",
-        "footer-1",
-        "footer-2"
+        "support"
       ],
       "settings": {
         "color_scheme": "scheme-1",
-        "newsletter_enable": true,
+        "newsletter_enable": false,
         "newsletter_heading": "Get on the list",
         "show_social": true,
         "enable_country_selector": false,

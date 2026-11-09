@@ -255,3 +255,17 @@ h3,
 		letter-spacing: 0.06em;
 	}
 }
+
+/* The store is one page plus support: the header keeps only the cart. */
+.header__search,
+.header__icon--search,
+.header__icon--account,
+.header__icons .header__icon--menu {
+	display: none !important;
+}
+.hij-contact__info-val a,
+.rte a,
+.footer a.link,
+.footer .rte a {
+	color: var(--rcb-yellow);
+}
