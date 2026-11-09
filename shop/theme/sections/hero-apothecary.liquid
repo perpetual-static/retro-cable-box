@@ -1,0 +1,229 @@
+{%- comment -%}
+  Hero — Apothecary
+  Brand-tailored homepage hero per plan §1.4 / §2.6.
+  - Centered chapter ornament
+  - Cormorant Garamond wordmark
+  - EB Garamond italic tagline
+  - Rule-diamond divider
+  - Single filled-gold CTA → catalog
+  - No background image; brand canvas + body grain show through.
+{%- endcomment -%}
+
+<div
+  class="hero-apothecary color-{{ section.settings.color_scheme }} isolate"
+  data-section-id="{{ section.id }}"
+>
+  <div class="hero-apothecary__inner">
+    <span class="hero-apothecary__ornament hero-apothecary__ornament--chapter" aria-hidden="true">
+      {{ 'ornament-chapter.svg' | inline_asset_content }}
+    </span>
+
+    {%- if section.settings.wordmark != blank -%}
+      <h1 class="hero-apothecary__wordmark">{{ section.settings.wordmark | escape }}</h1>
+    {%- else -%}
+      <h1 class="hero-apothecary__wordmark">{{ shop.name | escape }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.tagline != blank -%}
+      <div class="hero-apothecary__tagline rte">{{ section.settings.tagline }}</div>
+    {%- endif -%}
+
+    <span class="hero-apothecary__ornament hero-apothecary__ornament--rule" aria-hidden="true">
+      {{ 'ornament-rule-diamond.svg' | inline_asset_content }}
+    </span>
+
+    {%- if section.settings.cta_label != blank and section.settings.cta_link != blank -%}
+      <a
+        href="{{ section.settings.cta_link }}"
+        class="hero-apothecary__cta"
+      >
+        <span class="hero-apothecary__cta-label">{{ section.settings.cta_label | escape }}</span>
+      </a>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .hero-apothecary {
+    position: relative;
+    width: 100%;
+    padding-top: var(--space-14);
+    padding-bottom: var(--space-12);
+    background-color: #394c3d;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='72' viewBox='0 0 36 72'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231f3d32' fill-opacity='0.3'%3E%3Cpath d='M2 6h12L8 18 2 6zm18 36h12l-6 12-6-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 36px 72px;
+  }
+
+  .hero-apothecary.color-scheme-1,
+  .hero-apothecary.color-scheme-2,
+  .hero-apothecary.color-scheme-3 {
+    background-color: #394c3d;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='72' viewBox='0 0 36 72'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231f3d32' fill-opacity='0.3'%3E%3Cpath d='M2 6h12L8 18 2 6zm18 36h12l-6 12-6-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 36px 72px;
+  }
+
+  .hero-apothecary__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-5);
+  }
+
+  .hero-apothecary__ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent-gold);
+    line-height: 0;
+  }
+
+  .hero-apothecary__ornament--chapter {
+    width: 120px;
+    height: 16px;
+  }
+
+  .hero-apothecary__ornament--chapter svg {
+    width: 120px;
+    height: 16px;
+    display: block;
+  }
+
+  .hero-apothecary__ornament--rule {
+    width: 200px;
+    height: 12px;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .hero-apothecary__ornament--rule svg {
+    width: 200px;
+    height: 12px;
+    display: block;
+  }
+
+  .hero-apothecary__wordmark {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-weight: 700;
+    font-size: 3.2rem;
+    line-height: 1.05;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-body);
+  }
+
+  @media (min-width: 750px) {
+    .hero-apothecary__wordmark {
+      font-size: 4.8rem;
+    }
+  }
+
+  .hero-apothecary__tagline {
+    max-width: 48rem;
+    margin: 0;
+    font-family: var(--font-body-family);
+    font-style: italic;
+    font-size: 1.8rem;
+    line-height: 1.5;
+    color: var(--color-fg-muted);
+  }
+
+  @media (min-width: 750px) {
+    .hero-apothecary__tagline {
+      font-size: 2rem;
+    }
+  }
+
+  .hero-apothecary__tagline p {
+    margin: 0;
+    font-style: italic;
+  }
+
+  .hero-apothecary__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-7);
+    margin-top: var(--space-3);
+    background-color: var(--color-accent-gold);
+    color: var(--color-bg-canvas);
+    border: 1px solid var(--color-accent-gold);
+    text-decoration: none;
+    font-family: var(--font-heading-family);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      border-color 200ms ease;
+  }
+
+  .hero-apothecary__cta:hover,
+  .hero-apothecary__cta:focus-visible {
+    background-color: var(--color-bg-parchment, #ede6d6);
+    color: var(--color-bg-canvas);
+    border-color: var(--color-bg-parchment, #ede6d6);
+  }
+
+  .hero-apothecary__cta:focus-visible {
+    outline: 2px solid var(--color-accent-gold);
+    outline-offset: 3px;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Hero — Apothecary",
+  "tag": "section",
+  "class": "section section-hero-apothecary",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "wordmark",
+      "label": "Wordmark",
+      "default": "hearts in jars",
+      "info": "Displayed in uppercase; falls back to shop name if blank."
+    },
+    {
+      "type": "richtext",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "<p>A small print studio. Each piece made to order, by hand, on a personal 3D printer.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "Explore the catalog"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero — Apothecary",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    }
+  ]
+}
+{% endschema %}

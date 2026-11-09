@@ -1,0 +1,539 @@
+/* =============================================================
+   Hearts in Jars — Foundation Tokens + Globals
+   Loads AFTER Dawn's base.css so these values cascade-override.
+   Spec source: .omc/plans/heartsinjars-theme.md §2.1, §2.4, §2.5, §2.8
+   ============================================================= */
+
+/* -----------------------------------------------------------
+   Color tokens (§2.1)
+   Contrast verified per WCAG 2.1; see plan contrast matrix.
+   ----------------------------------------------------------- */
+:root {
+  --color-bg-canvas: #1E3D32;
+  --color-bg-surface: #264A3D;
+  --color-bg-surface-raised: #2E5848;
+  --color-bg-inset: #162E26;
+
+  --color-fg-body: #EDE6D6;
+  --color-fg-muted: #C4B89E;
+  --color-fg-faint: #908668;
+
+  --color-accent-gold: #D4B57A;
+  --color-accent-parchment: #EDE6D6;
+  --color-accent-copper: #6B4E26;
+
+  --color-border-frame: #D4B57A;
+  --color-border-muted: rgba(212, 181, 122, 0.35);
+  --color-border-faint: rgba(212, 181, 122, 0.20);
+
+  --color-interactive: #D4B57A;
+  --color-interactive-hover: #EDE6D6;
+
+  --color-success: #B0D29B;
+  --color-warning: #D9B872;
+  --color-error: #8C3A35;
+  --color-error-text: #EFA294;
+
+  --color-sale-badge-bg: #5A3A2A;
+  --color-sale-badge-fg: #EDE6D6;
+
+  --texture-opacity: 0.045;
+  --vignette-alpha: 0.055;
+}
+
+/* -----------------------------------------------------------
+   Spacing scale (§2.4) — 8px base, with named intermediates.
+   ----------------------------------------------------------- */
+:root {
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 2.5rem;    /* 40px */
+  --space-8: 3rem;      /* 48px — PDP fold budget */
+  --space-9: 3.5rem;    /* 56px */
+  --space-10: 4rem;     /* 64px */
+  --space-11: 4.5rem;   /* 72px — PDP specs bottom */
+  --space-12: 5rem;     /* 80px */
+  --space-14: 7rem;     /* 112px — hero padding */
+  --space-16: 8rem;     /* 128px — large hero */
+}
+
+/* -----------------------------------------------------------
+   Background texture (§2.5) — feTurbulence inline SVG + vignette.
+   Pressed-paper grain at 4.5% opacity over canvas; warm crown of
+   light at top via 5.5% radial gradient (Critic min #7).
+   ----------------------------------------------------------- */
+/* Background: lantern glow at top + paper-grain noise + faint hatch.
+   Dawn's .color-scheme-* wrappers paint a solid bg color over the body,
+   so we apply the texture to those wrappers themselves. */
+body {
+  background-color: var(--color-bg-canvas);
+  color: var(--color-fg-body);
+}
+
+/* Hide Dawn's announcement-bar group ("Welcome to our store") — our
+   lead-time banner serves that purpose with brand voice. */
+.utility-bar .announcement-bar {
+  display: none !important;
+}
+
+/* Header layout: let menu cell expand to fit content.
+   Dawn's default header grid uses fixed columns that can squeeze the
+   menu cell when the wordmark is wider than expected. */
+.header {
+  grid-template-columns: auto 1fr auto !important;
+  column-gap: var(--space-6);
+}
+
+.header__inline-menu {
+  min-width: 0;
+}
+
+.header__inline-menu .list-menu--inline {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header__inline-menu .list-menu--inline > li {
+  display: inline-flex !important;
+  align-items: center;
+}
+
+/* Featured-collection (Dawn) heading — center, smaller, brand register */
+[id*="featured_pieces"] .title-wrapper,
+[id*="featured_pieces"] .title-wrapper-with-link {
+  justify-content: center;
+  text-align: center;
+}
+
+[id*="featured_pieces"] .title,
+[id*="featured_pieces"] h2.title {
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 3.2rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin: 0 auto var(--space-4);
+  color: var(--color-fg-body);
+}
+
+[id*="featured_pieces"] .title-wrapper {
+  flex-direction: column;
+  margin-bottom: var(--space-8);
+}
+
+[id*="featured_pieces"] .title-wrapper-with-link a.link {
+  font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+}
+
+/* Section padding — give content room to breathe per plan §2.4 */
+.shopify-section [id*="featured_pieces"] {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-12);
+}
+
+.color-scheme-1,
+.color-scheme-2,
+.color-scheme-3,
+.color-scheme-5 {
+  background-image: url("bg-noise.svg"), repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(237, 230, 214, 0.014) 2px, rgba(237, 230, 214, 0.014) 3px);
+  background-repeat: repeat, repeat;
+  background-size: 320px 320px, auto;
+  background-blend-mode: overlay, normal;
+}
+
+/* Warm crown of light at top of the page only — applied to the first
+   .color-scheme-1 hit (typically the header/hero region). */
+.shopify-section-header + .shopify-section .color-scheme-1::before,
+.shopify-section:first-of-type .color-scheme-1::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 240px;
+  background: radial-gradient(ellipse 80% 100% at 50% 0%, rgba(212, 181, 122, 0.14) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* -----------------------------------------------------------
+   Skip-to-main-content link (§2.8) — visually hidden until focused.
+   Overrides Dawn's default .skip-to-content-link with our palette.
+   ----------------------------------------------------------- */
+.skip-link,
+.skip-to-content-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-accent-gold);
+  color: var(--color-bg-canvas);
+  font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  z-index: 9999;
+  transition: top 150ms ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible,
+.skip-to-content-link:focus,
+.skip-to-content-link:focus-visible {
+  top: 0;
+  clip: auto;
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+/* -----------------------------------------------------------
+   Focus state (§2.8) — gold ring with 3px offset, 6.04:1 on canvas.
+   ----------------------------------------------------------- */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 3px;
+}
+
+/* -----------------------------------------------------------
+   Reduced motion (§2.8) — disable non-essential transitions.
+   ----------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* -----------------------------------------------------------
+   Font cascade (§2.2)
+   Shopify's font_picker library does NOT include Cormorant
+   Garamond or EB Garamond. Schema placeholders (assistant_n4 /
+   assistant_n7) keep the validator happy; we override here using
+   the Google-Fonts-loaded families from layout/theme.liquid.
+   ----------------------------------------------------------- */
+:root {
+  --font-heading-family: 'Cormorant Garamond', 'Garamond', 'Book Antiqua', Georgia, serif;
+  --font-heading-family-fallback: var(--font-heading-family);
+  --font-heading-weight: 600;
+  --font-heading-style: normal;
+  --font-body-family: 'EB Garamond', 'Cormorant Garamond', 'Garamond', 'Book Antiqua', Georgia, serif;
+  --font-body-family-fallback: var(--font-body-family);
+  --font-body-weight: 400;
+  --font-body-style: normal;
+}
+body {
+  font-family: var(--font-body-family);
+  font-weight: var(--font-body-weight);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+}
+
+.font-display {
+  font-family: 'Cormorant Garamond', 'Garamond', 'Book Antiqua', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.font-body {
+  font-family: 'EB Garamond', 'Garamond', 'Book Antiqua', Georgia, serif;
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+}
+
+.font-smcp {
+  font-family: 'Cormorant SC', 'Cormorant Garamond', 'Garamond', Georgia, serif;
+  font-weight: 400;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+}
+
+@media (max-width: 639px) {
+  .font-smcp {
+    font-size: 1.1rem; /* 11px floor — Critic min #4 */
+  }
+}
+
+/* =============================================================
+   Featured-collection — Apothecary-label card treatment
+   Mirrors the Studio Details card pattern from main-contact-form.liquid.
+   Scoped under [id*="featured_pieces"] so only the home featured
+   section gets this treatment; collection pages stay Dawn defaults.
+   ============================================================= */
+
+@media (min-width: 750px) {
+  [id*="featured_pieces"] .product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    column-gap: var(--space-5);
+    row-gap: var(--space-8);
+  }
+}
+
+[id*="featured_pieces"] .grid__item {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+[id*="featured_pieces"] .card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: none !important;
+  text-decoration: none !important;
+}
+
+[id*="featured_pieces"] .card,
+[id*="featured_pieces"] .card__inner {
+  width: 100%;
+}
+
+[id*="featured_pieces"] .card-wrapper::before,
+[id*="featured_pieces"] .card-wrapper::after,
+[id*="featured_pieces"] .card-wrapper .card::before,
+[id*="featured_pieces"] .card-wrapper .card::after {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%23D4B57A' stroke-width='1.5' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M26%2C5 L6%2C5 L6%2C26'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 28px 28px;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 200ms ease;
+}
+
+[id*="featured_pieces"] .card-wrapper::before {
+  top: var(--space-2);
+  left: var(--space-2);
+}
+
+[id*="featured_pieces"] .card-wrapper::after {
+  top: var(--space-2);
+  right: var(--space-2);
+  transform: scaleX(-1);
+}
+
+[id*="featured_pieces"] .card-wrapper .card {
+  position: relative;
+}
+
+[id*="featured_pieces"] .card-wrapper .card::before {
+  bottom: var(--space-2);
+  left: var(--space-2);
+  transform: scaleY(-1);
+}
+
+[id*="featured_pieces"] .card-wrapper .card::after {
+  bottom: var(--space-2);
+  right: var(--space-2);
+  transform: scale(-1, -1);
+}
+
+[id*="featured_pieces"] .card-wrapper:hover::before,
+[id*="featured_pieces"] .card-wrapper:hover::after,
+[id*="featured_pieces"] .card-wrapper:hover .card::before,
+[id*="featured_pieces"] .card-wrapper:hover .card::after {
+  opacity: 1;
+}
+
+[id*="featured_pieces"] .card {
+  background-color: var(--color-bg-surface);
+  border-radius: 0 !important;
+  box-shadow: none;
+  border: 1px solid var(--color-border-frame);
+}
+
+[id*="featured_pieces"] .card.gradient,
+[id*="featured_pieces"] .card.color-scheme-1,
+[id*="featured_pieces"] .card.color-scheme-2 {
+  background-color: var(--color-bg-surface) !important;
+  background-image: none !important;
+}
+
+[id*="featured_pieces"] .card__media {
+  border: 1px solid var(--color-border-faint);
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+[id*="featured_pieces"] .card__media img {
+  transition: transform 400ms ease;
+}
+
+[id*="featured_pieces"] .card-wrapper:hover .card__media img {
+  transform: scale(1.03);
+}
+
+[id*="featured_pieces"] .card__content {
+  text-align: center;
+  align-items: center;
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  gap: 0;
+}
+
+[id*="featured_pieces"] .card__information {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+[id*="featured_pieces"] .card__information::before {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' fill='%23D4B57A'%3E%3Crect x='4' y='7' width='18' height='2'/%3E%3Crect x='27' y='5' width='6' height='6' transform='rotate(45 30 8)'/%3E%3Crect x='55' y='3' width='10' height='10' transform='rotate(45 60 8)'/%3E%3Crect x='87' y='5' width='6' height='6' transform='rotate(45 90 8)'/%3E%3Crect x='98' y='7' width='18' height='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin: 0 auto var(--space-2);
+  flex-shrink: 0;
+}
+
+[id*="featured_pieces"] .card__heading,
+[id*="featured_pieces"] .card__heading.h5 {
+  font-family: 'Cormorant Garamond', 'Garamond', 'Book Antiqua', Georgia, serif !important;
+  font-weight: 500 !important;
+  font-size: 1.8rem !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.25 !important;
+  color: var(--color-fg-body) !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-wrap: balance;
+  transition: color 200ms ease;
+}
+
+/* =============================================================
+   Product page — Share button: center, small-caps, gold accent
+   ============================================================= */
+.product .share-button {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-3);
+}
+
+.product .share-button details {
+  width: auto;
+}
+
+.product .share-button__button {
+  font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+  padding: var(--space-2) var(--space-5);
+  min-height: 0;
+  border: 1px solid var(--color-border-faint);
+  background: transparent;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+
+.product .share-button__button:hover {
+  text-decoration: none;
+  color: var(--color-interactive-hover);
+  border-color: var(--color-border-frame);
+}
+
+.product .share-button__button svg {
+  width: 14px;
+  height: 14px;
+}
+
+[id*="featured_pieces"] .card__heading a,
+[id*="featured_pieces"] .card__heading.h5 a {
+  color: inherit !important;
+  text-decoration: none !important;
+  display: inline;
+  padding: 0;
+  margin: 0;
+  min-height: 0;
+  line-height: inherit;
+}
+
+[id*="featured_pieces"] .card-wrapper:hover .card__heading,
+[id*="featured_pieces"] .card-wrapper:hover .card__heading.h5 {
+  color: var(--color-interactive-hover) !important;
+}
+
+[id*="featured_pieces"] .card__information::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background-color: var(--color-border-faint);
+  margin: var(--space-2) auto;
+  flex-shrink: 0;
+}
+
+[id*="featured_pieces"] .card-information {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+[id*="featured_pieces"] .price,
+[id*="featured_pieces"] .price__regular,
+[id*="featured_pieces"] .price--on-sale .price__sale {
+  font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 1.9rem !important;
+  font-weight: 400 !important;
+  font-variant: small-caps;
+  letter-spacing: 0.08em !important;
+  color: var(--color-accent-gold) !important;
+  text-align: center !important;
+}
+
+[id*="featured_pieces"] .price__compare {
+  font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.3rem;
+  color: var(--color-fg-muted) !important;
+  text-decoration: line-through;
+  text-align: center;
+}
+
+[id*="featured_pieces"] .price--large {
+  font-size: 1.9rem !important;
+}
+
+[id*="featured_pieces"] .card__inner.gradient,
+[id*="featured_pieces"] .card__inner.color-scheme-1,
+[id*="featured_pieces"] .card__inner.color-scheme-2 {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [id*="featured_pieces"] .card-wrapper:hover .card__media img {
+    transform: none;
+  }
+}
+
+@media (max-width: 639px) {
+  [id*="featured_pieces"] .card__content {
+    padding: var(--space-4) var(--space-4) var(--space-5);
+  }
+}

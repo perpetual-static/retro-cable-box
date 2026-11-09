@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square">
+  <!-- Top hairline rule -->
+  <line x1="0" y1="2" x2="400" y2="2"/>
+  <!-- Bottom hairline rule -->
+  <line x1="0" y1="78" x2="400" y2="78"/>
+  <!-- Top-left L corner -->
+  <path d="M26,6 L6,6 L6,26" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <!-- Top-right L corner -->
+  <path d="M374,6 L394,6 L394,26" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <!-- Bottom-left L corner -->
+  <path d="M26,74 L6,74 L6,54" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <!-- Bottom-right L corner -->
+  <path d="M374,74 L394,74 L394,54" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>

@@ -1,0 +1,72 @@
+{%- comment -%}
+  Retro channels: a list in the shape of guide rows. Each block is a row: a
+  channel number, a name, and a line of text, like the grid on the box.
+{%- endcomment -%}
+
+<section class="rcb-rows color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <div class="rcb-rows__head">
+        <span class="rcb-osd">{{ section.settings.kicker | escape }}</span>
+        <h2 class="rcb-rows__title">{{ section.settings.heading | escape }}</h2>
+      </div>
+    {%- endif -%}
+    <div class="rcb-rows__grid" role="list">
+      {%- for block in section.blocks -%}
+        <div class="rcb-row" role="listitem" {{ block.shopify_attributes }}>
+          <div class="rcb-row__ch">
+            <span class="rcb-row__n">{{ block.settings.num | escape }}</span>
+            <span class="rcb-row__name">{{ block.settings.name | escape }}</span>
+          </div>
+          <div class="rcb-row__text">{{ block.settings.text }}</div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- style -%}
+  .rcb-rows { padding: 5rem 0; }
+  .rcb-rows__head { margin-bottom: 2.4rem; }
+  .rcb-rows__head .rcb-osd { font-size: 2.2rem; }
+  .rcb-rows__title { margin: 0.4rem 0 0; font-size: clamp(2.8rem, 4vw, 4rem); text-transform: uppercase; }
+  .rcb-rows__grid { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rcb-row { display: grid; grid-template-columns: 26rem minmax(0, 1fr); gap: 0.5rem; }
+  .rcb-row__ch, .rcb-row__text { background: linear-gradient(180deg, var(--rcb-grid), var(--rcb-grid-dark)); border: 1px solid #000; padding: 1.4rem 1.8rem; }
+  .rcb-row__ch { display: flex; align-items: center; gap: 1.4rem; }
+  .rcb-row__n { font-family: var(--font-heading-family); font-size: 2.4rem; color: var(--rcb-yellow); min-width: 3.6rem; }
+  .rcb-row__name { font-family: var(--font-heading-family); font-size: 1.6rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .rcb-row__text { font-size: 1.8rem; line-height: 1.45; }
+  .rcb-row__text p { margin: 0; }
+  .rcb-row:hover .rcb-row__ch { background: linear-gradient(180deg, #ffe680, var(--rcb-yellow)); color: #101010; }
+  .rcb-row:hover .rcb-row__n { color: #101010; }
+  @media screen and (max-width: 749px) {
+    .rcb-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .rcb-row__ch { border-bottom: none; }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Retro channel rows",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "text", "id": "kicker", "label": "On-screen line", "default": "WHAT'S ON" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What it does" }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        { "type": "text", "id": "num", "label": "Channel number", "default": "2" },
+        { "type": "text", "id": "name", "label": "Name", "default": "CHANNEL" },
+        { "type": "richtext", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Retro channel rows" }]
+}
+{% endschema %}

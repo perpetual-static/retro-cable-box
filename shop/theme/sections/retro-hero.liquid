@@ -1,0 +1,85 @@
+{%- comment -%}
+  Retro hero: the store's front page in the box's guide look. An on-screen
+  channel readout and clock, the wordmark, a tagline, two buttons, and the
+  real channel guide in a TV frame.
+{%- endcomment -%}
+
+<section class="rcb-hero color-{{ section.settings.color_scheme }} gradient">
+  <div class="rcb-hero__inner page-width">
+    <div class="rcb-hero__copy">
+      <div class="rcb-hero__osd rcb-osd">
+        <span class="rcb-hero__ch">{{ section.settings.channel | escape }}</span>
+        <span class="rcb-hero__clock" data-rcb-clock></span>
+      </div>
+      <h1 class="rcb-hero__title">{{ section.settings.title | escape }}</h1>
+      {%- if section.settings.text != blank -%}
+        <div class="rcb-hero__text rte">{{ section.settings.text }}</div>
+      {%- endif -%}
+      <div class="rcb-hero__actions">
+        {%- if section.settings.button_label != blank -%}
+          <a class="button button--primary" href="{{ section.settings.button_link | default: '/products/retro-cable-box' }}">{{ section.settings.button_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.button2_label != blank -%}
+          <a class="button button--secondary" href="{{ section.settings.button2_link }}">{{ section.settings.button2_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+    <div class="rcb-hero__screen">
+      <span class="rcb-frame">
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'eager', sizes: '(min-width: 990px) 55vw, 100vw', alt: section.settings.image.alt }}
+        {%- else -%}
+          <img src="{{ 'retro-guide.png' | asset_url }}" width="1280" height="720" alt="The Retro Cable Box channel guide on a TV" loading="eager">
+        {%- endif -%}
+      </span>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var el = document.querySelector('[data-rcb-clock]');
+    if (!el) return;
+    function tick() {
+      el.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    }
+    tick();
+    setInterval(tick, 10000);
+  })();
+</script>
+
+{%- style -%}
+  .rcb-hero { padding: 5rem 0 6rem; }
+  .rcb-hero__inner { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 4.8rem; align-items: center; }
+  .rcb-hero__osd { display: flex; align-items: baseline; gap: 1.6rem; font-size: 2.4rem; }
+  .rcb-hero__ch { font-size: 4.2rem; line-height: 1; }
+  .rcb-hero__clock { color: rgb(var(--color-foreground)); text-shadow: none; }
+  .rcb-hero__title { font-size: clamp(4rem, 6vw, 7.2rem); line-height: 1; margin: 1.2rem 0 2rem; text-transform: uppercase; }
+  .rcb-hero__text { font-size: 2rem; line-height: 1.5; max-width: 48rem; }
+  .rcb-hero__actions { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-top: 3.2rem; }
+  @media screen and (max-width: 989px) {
+    .rcb-hero { padding: 3rem 0 4rem; }
+    .rcb-hero__inner { grid-template-columns: minmax(0, 1fr); gap: 3.2rem; }
+    .rcb-hero__screen { order: -1; }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Retro hero",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "text", "id": "channel", "label": "On-screen channel", "default": "CH 03" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Retro Cable Box" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "image_picker", "id": "image", "label": "Screen image", "info": "Leave empty to show the channel guide." },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Get the box" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "button2_label", "label": "Second button" },
+    { "type": "url", "id": "button2_link", "label": "Second button link" }
+  ],
+  "presets": [{ "name": "Retro hero" }]
+}
+{% endschema %}

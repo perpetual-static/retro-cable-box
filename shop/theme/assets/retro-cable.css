@@ -1,0 +1,257 @@
+/*
+ * Retro Cable Box — the store wears the box's own look (the 90s channel
+ * guide): navy and guide-blue panels, yellow Archivo Black headings with a
+ * red drop shadow, Archivo Narrow text, VT323 for on-screen-display touches.
+ * Loads after base.css. Colors come from the theme's color schemes
+ * (settings_data.json); this file sets type, edges and the guide details.
+ */
+
+:root {
+	--rcb-navy: #070c3d;
+	--rcb-grid: #1b34a8;
+	--rcb-grid-dark: #0f1d6e;
+	--rcb-edge: #6f8cff;
+	--rcb-yellow: #ffd23a;
+	--rcb-red: #b0302a;
+	--rcb-osd: #5dff6a;
+	--rcb-osd-glow: rgba(93, 255, 106, 0.55);
+	--rcb-white: #f4f4ee;
+	--font-heading-family: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+	--font-heading-weight: 400;
+	--font-heading-style: normal;
+	--font-body-family: 'Archivo Narrow', 'Arial Narrow', system-ui, sans-serif;
+	--font-body-weight: 500;
+	--font-body-weight-bold: 700;
+	--font-body-style: normal;
+	--rcb-osd-font: 'VT323', ui-monospace, monospace;
+
+	/* Design tokens the theme's older sections use, now in the box's colors. */
+	--color-bg-canvas: #070c3d;
+	--color-bg-surface: #0f1d6e;
+	--color-bg-surface-raised: #1b34a8;
+	--color-bg-raised: #1b34a8;
+	--color-bg-inset: #000000;
+	--color-bg-parchment: #0f1d6e;
+	--color-fg-body: #f4f4ee;
+	--color-fg-muted: #c9cde8;
+	--color-fg-faint: #8f97c8;
+	--color-accent-gold: #ffd23a;
+	--color-accent-parchment: #f4f4ee;
+	--color-accent-copper: #b0302a;
+	--color-border-frame: #6f8cff;
+	--color-border-muted: rgba(111, 140, 255, 0.45);
+	--color-border-faint: rgba(111, 140, 255, 0.25);
+	--color-interactive: #ffd23a;
+	--color-interactive-hover: #ffffff;
+	--color-success: #5dff6a;
+	--color-warning: #ffd23a;
+	--color-error: #b0302a;
+	--color-error-text: #ff8a80;
+	--color-sale-badge-bg: #b0302a;
+	--color-sale-badge-fg: #ffffff;
+	--space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem;
+	--space-7: 2.5rem; --space-8: 3rem; --space-9: 3.5rem; --space-10: 4rem; --space-11: 4.5rem; --space-12: 5rem;
+	--space-14: 7rem; --space-16: 8rem;
+}
+
+body {
+	background: linear-gradient(180deg, #0d1866 0, var(--rcb-navy) 26rem) no-repeat, var(--rcb-navy);
+	font-size: 1.7rem;
+	letter-spacing: 0.01em;
+}
+
+/* ── type ─────────────────────────────────────────────────────────────── */
+h1,
+h2,
+.h0,
+.h1,
+.h2 {
+	color: var(--rcb-yellow);
+	letter-spacing: 0.03em;
+	text-shadow: 0.15rem 0.15rem 0 var(--rcb-red);
+}
+h3,
+.h3,
+.h4 {
+	letter-spacing: 0.04em;
+}
+.color-scheme-5 h1,
+.color-scheme-5 h2,
+.color-scheme-5 .h1,
+.color-scheme-5 .h2 {
+	color: #101010;
+	text-shadow: none;
+}
+
+/* Prices read like the on-screen display. */
+.price,
+.price-item,
+.price__regular .price-item--regular {
+	font-family: var(--rcb-osd-font);
+	font-size: 2.6rem;
+	letter-spacing: 0.04em;
+	color: var(--rcb-osd);
+	text-shadow: 0 0 0.6rem var(--rcb-osd-glow);
+}
+.badge {
+	font-family: var(--rcb-osd-font);
+	font-size: 1.6rem;
+	letter-spacing: 0.08em;
+	border-radius: 0;
+}
+
+/* ── header and announcement ─────────────────────────────────────────── */
+.utility-bar,
+.utility-bar .announcement-bar {
+	background: #000 !important;
+	border-color: var(--rcb-grid) !important;
+}
+.announcement-bar,
+.announcement-bar__message {
+	font-family: var(--rcb-osd-font);
+	font-size: 1.8rem;
+	letter-spacing: 0.12em;
+	color: var(--rcb-osd);
+	background: #000;
+}
+.header-wrapper {
+	background: transparent;
+	border-bottom: 0.2rem solid var(--rcb-grid);
+}
+.header__wordmark {
+	font-family: var(--font-heading-family);
+	font-size: clamp(2rem, 3vw, 2.8rem);
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--rcb-yellow);
+	text-shadow: 0.2rem 0.2rem 0 var(--rcb-red);
+	white-space: nowrap;
+}
+.header__inline-menu .list-menu--inline {
+	flex-wrap: nowrap;
+	gap: 0.4rem;
+}
+.header__inline-menu .list-menu__item--link {
+	white-space: nowrap;
+	font-family: var(--font-heading-family);
+	font-size: 1.4rem;
+	letter-spacing: 0.08em;
+	color: var(--rcb-white);
+}
+.header__inline-menu .list-menu__item--link:hover,
+.header__inline-menu .list-menu__item--link[aria-current='page'] {
+	color: var(--rcb-yellow);
+}
+.header__menu-item,
+.header__active-menu-item,
+.menu-drawer__menu-item {
+	font-family: var(--font-heading-family);
+	font-size: 1.4rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+.header__menu-item:hover span,
+.header__active-menu-item {
+	color: var(--rcb-yellow);
+	text-decoration: none;
+}
+
+/* ── buttons: yellow keys with a hard red shadow ─────────────────────── */
+.button,
+.shopify-payment-button__button--unbranded {
+	font-family: var(--font-heading-family);
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	box-shadow: 0.4rem 0.4rem 0 var(--rcb-red);
+}
+.button:after,
+.button:before {
+	box-shadow: none !important;
+}
+.button--secondary {
+	box-shadow: none;
+	border: 0.2rem solid var(--rcb-edge);
+}
+.button[disabled],
+.button[aria-disabled='true'] {
+	box-shadow: none;
+	opacity: 0.7;
+}
+
+/* ── cards and media sit in guide frames ─────────────────────────────── */
+.card-wrapper .card,
+.product__media-item,
+.global-media-settings {
+	border: 0.3rem solid var(--rcb-edge) !important;
+	box-shadow: 0 0 0 0.3rem #000;
+	border-radius: 0 !important;
+}
+.card__heading,
+.card__heading a {
+	font-family: var(--font-heading-family);
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+.field__input,
+.select__select,
+.customer .field input {
+	border-radius: 0;
+	font-family: var(--rcb-osd-font);
+	font-size: 2rem;
+}
+
+/* ── footer ──────────────────────────────────────────────────────────── */
+.footer {
+	border-top: 0.2rem solid var(--rcb-grid);
+}
+.footer-block__heading {
+	font-family: var(--rcb-osd-font);
+	font-size: 2rem;
+	letter-spacing: 0.1em;
+	color: var(--rcb-osd);
+	text-shadow: none;
+}
+.footer__copyright,
+.copyright__content {
+	font-family: var(--rcb-osd-font);
+	font-size: 1.6rem;
+	letter-spacing: 0.08em;
+}
+
+/* ── shared pieces of the custom sections ────────────────────────────── */
+.rcb-osd {
+	font-family: var(--rcb-osd-font);
+	color: var(--rcb-osd);
+	text-shadow: 0 0 0.6rem var(--rcb-osd-glow);
+	letter-spacing: 0.08em;
+}
+.rcb-frame {
+	border: 0.4rem solid var(--rcb-edge);
+	box-shadow:
+		0 0 0 0.4rem #000,
+		0 1.6rem 4rem rgba(0, 0, 0, 0.55);
+	background: #000;
+	display: block;
+}
+.rcb-frame img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* ── phones ──────────────────────────────────────────────────────────── */
+@media screen and (max-width: 749px) {
+	.header .header__heading .header__wordmark,
+	.header .header__wordmark {
+		font-size: 1.7rem !important;
+		letter-spacing: 0.02em !important;
+	}
+	.header__heading-link {
+		min-width: 0;
+	}
+	.announcement-bar__message {
+		font-size: 1.5rem;
+		letter-spacing: 0.06em;
+	}
+}

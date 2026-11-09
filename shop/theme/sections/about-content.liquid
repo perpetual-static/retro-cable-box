@@ -1,0 +1,126 @@
+{{ 'section-main-page.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="about-page page-width page-width--narrow section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}">
+  <div class="about-page__body rte">
+    <h1 class="about-page__chapter">The shop</h1>
+    <p>
+      hearts in jars is a small print-on-demand studio run by one person.
+      Everything is printed to order on a personal 3D printer, one at a
+      time, by hand.
+    </p>
+
+    <h2 class="about-page__chapter">The work</h2>
+    <p>
+      The catalog leans toward apothecary, anatomy, and quiet gothic — pieces
+      that would feel at home on a specimen cabinet or a herbalist's shelf.
+      Some files are designed in-house; some come from creators I've licensed
+      from. Designer credits and licenses are noted on every product page.
+    </p>
+
+    <h2 class="about-page__chapter">Lead times</h2>
+    <p>
+      Most pieces ship in 7 to 21 days from order to mailbox. Some larger or
+      more detailed work takes longer. Every order gets a confirmation when
+      printing starts, and another when it ships.
+    </p>
+
+    <h2 class="about-page__chapter">Custom prints</h2>
+    <p>
+      If you have your own STL file you'd like printed, get in touch first —
+      we'll quote it together.
+    </p>
+  </div>
+</div>
+
+<style>
+  .about-page {
+    max-width: 68rem;
+  }
+
+  .about-page__body {
+    font-family: var(--font-body-family);
+    font-size: 1.6rem;
+    line-height: 1.8;
+    color: rgb(var(--color-foreground));
+  }
+
+  .about-page__chapter {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    font-size: 2.2rem;
+    letter-spacing: 0.03em;
+    margin-top: 4.8rem;
+    margin-bottom: 1.6rem;
+    color: rgb(var(--color-foreground));
+  }
+
+  .about-page__body h1.about-page__chapter {
+    margin-top: 0;
+  }
+
+  .about-page__body p {
+    margin-top: 0;
+    margin-bottom: 1.6rem;
+    color: rgba(var(--color-foreground), 0.85);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "About content",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "About content"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,527 @@
+{%- comment -%}
+  Contact page — brand two-column layout.
+  Left: Dawn contact form (Liquid mechanics preserved).
+  Right: studio info card with corner ornaments.
+{%- endcomment -%}
+
+<div class="hij-contact">
+
+  {%- comment -%} Hero block — chapter ornament + heading + intro {%- endcomment -%}
+  <div class="hij-contact__hero">
+    <div class="hij-contact__chapter" aria-hidden="true">
+      {{ 'ornament-chapter.svg' | inline_asset_content }}
+    </div>
+
+    <h1 class="hij-contact__heading">Get in touch</h1>
+
+    <p class="hij-contact__intro">
+      If you have a question about a current order, a custom print idea, or a
+      wholesale inquiry, send a note. Replies typically arrive within 1&ndash;2
+      business days.
+    </p>
+  </div>
+
+  {%- comment -%} Diamond rule between hero and body {%- endcomment -%}
+  <div class="hij-contact__rule" aria-hidden="true">
+    {{ 'ornament-rule-diamond.svg' | inline_asset_content }}
+  </div>
+
+  {%- comment -%} Two-column body {%- endcomment -%}
+  <div class="hij-contact__body">
+
+    {%- comment -%} Left column: the contact form {%- endcomment -%}
+    <div class="hij-contact__form-col">
+
+      {%- liquid
+        assign contact_form_class = 'hij-contact__form isolate'
+        if settings.animations_reveal_on_scroll
+          assign contact_form_class = 'hij-contact__form isolate scroll-trigger animate--slide-in'
+        endif
+      -%}
+
+      {%- form 'contact', id: 'ContactForm', class: contact_form_class -%}
+
+        {%- if form.posted_successfully? -%}
+          <div class="hij-contact__success" role="status" tabindex="-1" autofocus>
+            <div class="hij-contact__success-ornament" aria-hidden="true">
+              {{ 'ornament-diamond.svg' | inline_asset_content }}
+            </div>
+            {{ 'templates.contact.form.post_success' | t }}
+          </div>
+        {%- elsif form.errors -%}
+          <div class="hij-contact__form-error" role="alert" tabindex="-1" autofocus>
+            {{ 'templates.contact.form.error_heading' | t }}
+          </div>
+          <ul class="hij-contact__error-list">
+            <li>
+              <a href="#ContactForm-email" class="hij-contact__error-link">
+                {{ form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email }}
+              </a>
+            </li>
+          </ul>
+        {%- endif -%}
+
+        {%- comment -%} Name + Email row {%- endcomment -%}
+        <div class="hij-contact__fields-row">
+          <div class="hij-contact__field">
+            <label class="hij-contact__label font-smcp" for="ContactForm-name">
+              {{ 'templates.contact.form.name' | t }}
+            </label>
+            <input
+              class="hij-contact__input"
+              autocomplete="name"
+              type="text"
+              id="ContactForm-name"
+              name="contact[{{ 'templates.contact.form.name' | t }}]"
+              value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+              placeholder="{{ 'templates.contact.form.name' | t }}"
+            >
+          </div>
+
+          <div class="hij-contact__field">
+            <label class="hij-contact__label font-smcp" for="ContactForm-email">
+              {{ 'templates.contact.form.email' | t }}
+              <span aria-hidden="true">*</span>
+            </label>
+            <input
+              autocomplete="email"
+              type="email"
+              id="ContactForm-email"
+              class="hij-contact__input{% if form.errors contains 'email' %} hij-contact__input--error{% endif %}"
+              name="contact[email]"
+              spellcheck="false"
+              autocapitalize="off"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              aria-required="true"
+              {% if form.errors contains 'email' %}
+                aria-invalid="true"
+                aria-describedby="ContactForm-email-error"
+              {% endif %}
+              placeholder="{{ 'templates.contact.form.email' | t }}"
+            >
+            {%- if form.errors contains 'email' -%}
+              <small class="hij-contact__field-error" id="ContactForm-email-error">
+                <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+                {{- form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email -}}
+              </small>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Phone {%- endcomment -%}
+        <div class="hij-contact__field">
+          <label class="hij-contact__label font-smcp" for="ContactForm-phone">
+            {{ 'templates.contact.form.phone' | t }}
+          </label>
+          <input
+            type="tel"
+            id="ContactForm-phone"
+            class="hij-contact__input"
+            autocomplete="tel"
+            name="contact[{{ 'templates.contact.form.phone' | t }}]"
+            pattern="[0-9\-]*"
+            value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+            placeholder="{{ 'templates.contact.form.phone' | t }}"
+          >
+        </div>
+
+        {%- comment -%} Message {%- endcomment -%}
+        <div class="hij-contact__field">
+          <label class="hij-contact__label font-smcp" for="ContactForm-body">
+            {{ 'templates.contact.form.comment' | t }}
+          </label>
+          <textarea
+            rows="8"
+            id="ContactForm-body"
+            class="hij-contact__input hij-contact__textarea"
+            name="contact[{{ 'templates.contact.form.comment' | t }}]"
+            placeholder="{{ 'templates.contact.form.comment' | t }}"
+          >{{- form.body -}}</textarea>
+        </div>
+
+        <div class="hij-contact__submit-row">
+          <button type="submit" class="hij-contact__submit font-smcp">
+            {{ 'templates.contact.form.send' | t }}
+          </button>
+        </div>
+
+      {%- endform -%}
+    </div>
+
+    {%- comment -%} Right column: studio info card {%- endcomment -%}
+    <aside class="hij-contact__info-col">
+      <div class="hij-contact__info-card">
+        {%- comment -%} Corner ornaments {%- endcomment -%}
+        <span class="hij-contact__corner hij-contact__corner--tl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+        <span class="hij-contact__corner hij-contact__corner--tr" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+        <span class="hij-contact__corner hij-contact__corner--bl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+        <span class="hij-contact__corner hij-contact__corner--br" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+
+        <div class="hij-contact__info-chapter" aria-hidden="true">
+          {{ 'ornament-chapter.svg' | inline_asset_content }}
+        </div>
+
+        <h2 class="hij-contact__info-heading font-smcp">Studio Details</h2>
+
+        <dl class="hij-contact__info-list">
+          <div class="hij-contact__info-row">
+            <dt class="hij-contact__info-key">Response time</dt>
+            <dd class="hij-contact__info-val">1&ndash;2 business days</dd>
+          </div>
+          <div class="hij-contact__info-row">
+            <dt class="hij-contact__info-key">Order inquiries</dt>
+            <dd class="hij-contact__info-val">Use the form with your order number</dd>
+          </div>
+          <div class="hij-contact__info-row">
+            <dt class="hij-contact__info-key">Custom prints</dt>
+            <dd class="hij-contact__info-val">Custom STL files welcome &mdash; quote provided after review</dd>
+          </div>
+          <div class="hij-contact__info-row">
+            <dt class="hij-contact__info-key">Wholesale</dt>
+            <dd class="hij-contact__info-val">Open to wholesale conversation &mdash; mention it in your note</dd>
+          </div>
+          <div class="hij-contact__info-row">
+            <dt class="hij-contact__info-key">Lead time</dt>
+            <dd class="hij-contact__info-val">Most pieces ship in 7&ndash;21 days</dd>
+          </div>
+        </dl>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<style>
+  /* -----------------------------------------------------------
+     Contact page — brand two-column layout
+     ----------------------------------------------------------- */
+
+  .hij-contact {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-6) var(--space-16);
+  }
+
+  /* Hero block */
+  .hij-contact__hero {
+    text-align: center;
+    margin-bottom: var(--space-9);
+  }
+
+  .hij-contact__chapter {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-5);
+    color: var(--color-accent-gold);
+  }
+
+  .hij-contact__chapter svg {
+    width: 120px;
+    height: 16px;
+  }
+
+  .hij-contact__heading {
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: clamp(3.2rem, 5vw, 4rem);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    color: var(--color-accent-gold);
+    margin: 0 0 var(--space-5) 0;
+  }
+
+  .hij-contact__intro {
+    font-family: var(--font-body-family);
+    font-size: 1.7rem;
+    line-height: 1.72;
+    color: var(--color-fg-body);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* Diamond rule */
+  .hij-contact__rule {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto var(--space-11);
+    color: var(--color-border-muted);
+    max-width: 280px;
+  }
+
+  .hij-contact__rule svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Two-column grid */
+  .hij-contact__body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+
+  @media screen and (min-width: 1024px) {
+    .hij-contact__body {
+      grid-template-columns: 3fr 2fr;
+      gap: var(--space-16);
+      align-items: start;
+    }
+  }
+
+  /* Form field shared styles */
+  .hij-contact__fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+
+  @media screen and (max-width: 639px) {
+    .hij-contact__fields-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .hij-contact__field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-5);
+  }
+
+  .hij-contact__fields-row .hij-contact__field {
+    margin-bottom: 0;
+  }
+
+  .hij-contact__label {
+    font-family: var(--font-heading-family);
+    font-size: 1.2rem;
+    letter-spacing: 0.10em;
+    color: var(--color-accent-gold);
+    margin-bottom: var(--space-2);
+  }
+
+  .hij-contact__input {
+    display: block;
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-bg-inset);
+    border: 1px solid var(--color-border-frame);
+    color: var(--color-fg-body);
+    font-family: var(--font-body-family);
+    font-size: 1.6rem;
+    line-height: 1.5;
+    box-sizing: border-box;
+    transition: border-color 180ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .hij-contact__input::placeholder {
+    color: var(--color-fg-faint);
+    font-style: italic;
+  }
+
+  .hij-contact__input:focus,
+  .hij-contact__input:focus-visible {
+    outline: 2px solid var(--color-accent-gold);
+    outline-offset: 3px;
+    border-color: var(--color-accent-gold);
+  }
+
+  .hij-contact__input--error {
+    border-color: var(--color-error);
+  }
+
+  .hij-contact__textarea {
+    resize: vertical;
+    min-height: 160px;
+  }
+
+  /* Field error text */
+  .hij-contact__field-error {
+    font-family: var(--font-body-family);
+    font-size: 1.4rem;
+    color: var(--color-error-text);
+    margin-top: var(--space-2);
+  }
+
+  /* Form-level messages */
+  .hij-contact__success {
+    font-family: var(--font-body-family);
+    font-size: 1.6rem;
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .hij-contact__success-ornament svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--color-success);
+  }
+
+  .hij-contact__form-error {
+    font-family: var(--font-body-family);
+    font-size: 1.5rem;
+    color: var(--color-error-text);
+    background-color: rgba(140, 58, 53, 0.12);
+    border: 1px solid var(--color-error);
+    padding: var(--space-3) var(--space-5);
+    margin-bottom: var(--space-3);
+  }
+
+  .hij-contact__error-list {
+    list-style: none;
+    margin: 0 0 var(--space-5) 0;
+    padding: 0;
+  }
+
+  .hij-contact__error-link {
+    font-family: var(--font-body-family);
+    font-size: 1.4rem;
+    color: var(--color-error-text);
+    text-decoration: underline;
+  }
+
+  /* Submit button */
+  .hij-contact__submit-row {
+    margin-top: var(--space-4);
+  }
+
+  .hij-contact__submit {
+    display: inline-block;
+    padding: var(--space-3) var(--space-10);
+    background-color: var(--color-accent-gold);
+    color: var(--color-bg-canvas);
+    border: 1px solid var(--color-accent-gold);
+    font-family: var(--font-heading-family);
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  .hij-contact__submit:hover,
+  .hij-contact__submit:focus-visible {
+    background-color: transparent;
+    color: var(--color-accent-gold);
+    outline: 2px solid var(--color-accent-gold);
+    outline-offset: 3px;
+  }
+
+  /* Info card — right column */
+  .hij-contact__info-card {
+    position: relative;
+    background-color: var(--color-bg-inset);
+    border: 1px solid var(--color-border-frame);
+    padding: var(--space-8) var(--space-7) var(--space-7);
+  }
+
+  /* Corner ornaments */
+  .hij-contact__corner {
+    position: absolute;
+    display: flex;
+    width: 28px;
+    height: 28px;
+    color: var(--color-border-frame);
+  }
+
+  .hij-contact__corner svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .hij-contact__corner--tl { top: -1px; left: -1px; }
+  .hij-contact__corner--tr { top: -1px; right: -1px; transform: scaleX(-1); }
+  .hij-contact__corner--bl { bottom: -1px; left: -1px; transform: scaleY(-1); }
+  .hij-contact__corner--br { bottom: -1px; right: -1px; transform: scale(-1, -1); }
+
+  /* Info card chapter ornament */
+  .hij-contact__info-chapter {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-4);
+    color: var(--color-accent-gold);
+  }
+
+  .hij-contact__info-chapter svg {
+    width: 90px;
+    height: 12px;
+  }
+
+  /* Info card heading */
+  .hij-contact__info-heading {
+    font-family: var(--font-heading-family);
+    font-weight: 400;
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-gold);
+    text-align: center;
+    margin: 0 0 var(--space-5) 0;
+  }
+
+  /* Info list — definition list */
+  .hij-contact__info-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  .hij-contact__info-row {
+    border-top: 1px solid var(--color-border-muted);
+    padding: var(--space-3) 0;
+  }
+
+  .hij-contact__info-row:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .hij-contact__info-row:last-child {
+    padding-bottom: 0;
+  }
+
+  .hij-contact__info-key {
+    font-family: var(--font-heading-family);
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--color-fg-muted);
+    margin: 0 0 var(--space-1) 0;
+  }
+
+  .hij-contact__info-val {
+    font-family: var(--font-body-family);
+    font-size: 1.5rem;
+    color: var(--color-fg-body);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Mobile */
+  @media screen and (max-width: 639px) {
+    .hij-contact {
+      padding: var(--space-11) var(--space-5);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "Contact form"
+    }
+  ]
+}
+{% endschema %}

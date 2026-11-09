@@ -1,0 +1,217 @@
+<div class="err404">
+  <div class="err404__inner">
+
+    {%- comment -%} Chapter ornament {%- endcomment -%}
+    <div class="err404__chapter-ornament" aria-hidden="true">
+      {{ 'ornament-chapter.svg' | inline_asset_content }}
+    </div>
+
+    {%- comment -%} Frame ornament behind content {%- endcomment -%}
+    <div class="err404__frame-wrap" aria-hidden="true">
+      {{ 'ornament-frame.svg' | inline_asset_content }}
+    </div>
+
+    <div class="err404__content">
+      <h1 class="err404__headline">Mislaid</h1>
+
+      <p class="err404__subhead">The page you sought has wandered off the shelf.</p>
+
+      <div class="err404__rule" aria-hidden="true">
+        {{ 'ornament-rule-diamond.svg' | inline_asset_content }}
+      </div>
+
+      <p class="err404__body">
+        Perhaps the jar was moved, or the label has faded. You can return to the
+        <a class="err404__link" href="{{ routes.root_url }}">shop</a>
+        or read the
+        <a class="err404__link" href="{{ routes.root_url }}pages/about">story of the studio</a>
+        &mdash; both are well-lit and within easy reach.
+      </p>
+
+      <a href="{{ routes.root_url }}" class="err404__button">
+        <span class="font-smcp">Return to the Shop</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* -----------------------------------------------------------
+     404 — Mislaid — apothecary label aesthetic
+     ----------------------------------------------------------- */
+
+  .err404 {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-16) var(--space-6);
+  }
+
+  .err404__inner {
+    position: relative;
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Chapter ornament — centered, gold, 120×16 */
+  .err404__chapter-ornament {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+    color: var(--color-accent-gold);
+    animation: err404-fade-in 0.8s ease both;
+  }
+
+  .err404__chapter-ornament svg {
+    width: 120px;
+    height: 16px;
+  }
+
+  /* Frame ornament — positioned behind content, decorative */
+  .err404__frame-wrap {
+    position: absolute;
+    inset: calc(var(--space-8) * -1) calc(var(--space-6) * -1);
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, 92vw);
+    pointer-events: none;
+    color: var(--color-border-faint);
+    z-index: 0;
+    animation: err404-fade-in 1.2s ease both;
+    animation-delay: 0.3s;
+    opacity: 0;
+  }
+
+  .err404__frame-wrap svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Content layers above the frame */
+  .err404__content {
+    position: relative;
+    z-index: 1;
+    animation: err404-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.1s;
+  }
+
+  /* Headline — Cormorant Garamond, deep gold */
+  .err404__headline {
+    font-family: var(--font-heading-family);
+    font-weight: 600;
+    font-size: clamp(3.6rem, 6vw, 4.8rem);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    color: var(--color-accent-gold);
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  /* Subhead — EB Garamond italic, muted */
+  .err404__subhead {
+    font-family: var(--font-body-family);
+    font-style: italic;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: var(--color-fg-muted);
+    margin: 0 0 var(--space-5) 0;
+  }
+
+  /* Rule divider */
+  .err404__rule {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto var(--space-5);
+    color: var(--color-border-muted);
+    max-width: 200px;
+  }
+
+  .err404__rule svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Body — EB Garamond, warm parchment, relaxed leading */
+  .err404__body {
+    font-family: var(--font-body-family);
+    font-size: 1.6rem;
+    line-height: 1.75;
+    color: var(--color-fg-body);
+    margin: 0 0 var(--space-9) 0;
+  }
+
+  /* Inline links — gold underline */
+  .err404__link {
+    color: var(--color-accent-gold);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-muted);
+    text-underline-offset: 3px;
+    transition: color 180ms ease, text-decoration-color 180ms ease;
+  }
+
+  .err404__link:hover,
+  .err404__link:focus-visible {
+    color: var(--color-interactive-hover);
+    text-decoration-color: var(--color-accent-gold);
+  }
+
+  /* CTA button — filled gold */
+  .err404__button {
+    display: inline-block;
+    padding: var(--space-3) var(--space-8);
+    background-color: var(--color-accent-gold);
+    color: var(--color-bg-canvas);
+    font-family: var(--font-heading-family);
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    border: 1px solid var(--color-accent-gold);
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+  }
+
+  .err404__button:hover,
+  .err404__button:focus-visible {
+    background-color: transparent;
+    color: var(--color-accent-gold);
+  }
+
+  /* Keyframe animations */
+  @keyframes err404-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes err404-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile adjustments */
+  @media screen and (max-width: 639px) {
+    .err404 {
+      padding: var(--space-12) var(--space-5);
+      min-height: 60vh;
+    }
+
+    .err404__frame-wrap {
+      display: none; /* frame ornament clips awkwardly on small screens */
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "404 page",
+  "tag": "section",
+  "class": "section"
+}
+{% endschema %}

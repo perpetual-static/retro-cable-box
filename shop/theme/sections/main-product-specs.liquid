@@ -1,0 +1,360 @@
+{%- comment -%}
+  Apothecary specifications panel — reads product metafields from the compendium namespace.
+  Displays only rows where the metafield has a value.
+{%- endcomment -%}
+
+{%- liquid
+  assign print_time = product.metafields.compendium.print_time_minutes.value | plus: 0
+  assign material = product.metafields.compendium.material.value
+  assign colors_list = product.metafields.compendium.colors_available.value
+  assign lead_min = product.metafields.compendium.lead_time_days_min.value | plus: 0
+  assign lead_max = product.metafields.compendium.lead_time_days_max.value | plus: 0
+  assign model_credit = product.metafields.compendium.model_credit.value
+  assign model_license = product.metafields.compendium.model_license.value
+
+  assign has_print_time = false
+  if print_time > 0
+    assign has_print_time = true
+  endif
+
+  assign has_material = false
+  if material != blank
+    assign has_material = true
+  endif
+
+  assign has_colors = false
+  if colors_list != blank
+    assign has_colors = true
+  endif
+
+  assign has_lead_time = false
+  if lead_min > 0 or lead_max > 0
+    assign has_lead_time = true
+  endif
+
+  assign has_credit = false
+  if model_credit != blank
+    assign has_credit = true
+  endif
+
+  assign has_license = false
+  if model_license != blank
+    assign has_license = true
+  endif
+
+  assign has_any = false
+  if has_print_time or has_material or has_colors or has_lead_time or has_credit or has_license
+    assign has_any = true
+  endif
+-%}
+
+{%- if has_any -%}
+  <div class="product-specs section-{{ section.id }}-padding">
+    <div class="product-specs__inner">
+
+      {%- comment -%} Chapter ornament above the heading {%- endcomment -%}
+      <div class="product-specs__chapter-ornament" aria-hidden="true">
+        {{ 'ornament-chapter.svg' | inline_asset_content }}
+      </div>
+
+      <h2 class="product-specs__heading">Specifications</h2>
+
+      {%- comment -%} Framed card with corner ornaments {%- endcomment -%}
+      <div class="product-specs__card">
+        <span class="product-specs__corner product-specs__corner--tl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+        <span class="product-specs__corner product-specs__corner--tr" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+        <span class="product-specs__corner product-specs__corner--bl" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+        <span class="product-specs__corner product-specs__corner--br" aria-hidden="true">{{ 'ornament-corner-tl.svg' | inline_asset_content }}</span>
+
+        <dl class="product-specs__list">
+          {%- if has_print_time -%}
+            {%- liquid
+              assign print_hours = print_time | divided_by: 60
+              assign print_mins = print_time | modulo: 60
+            -%}
+            <div class="product-specs__row">
+              <dt class="product-specs__key">Print time</dt>
+              <dd class="product-specs__value">
+                {%- if print_hours > 0 and print_mins > 0 -%}
+                  {{ print_hours }} hour{% if print_hours != 1 %}s{% endif %} {{ print_mins }} minute{% if print_mins != 1 %}s{% endif %}
+                {%- elsif print_hours > 0 -%}
+                  {{ print_hours }} hour{% if print_hours != 1 %}s{% endif %}
+                {%- else -%}
+                  {{ print_time }} minute{% if print_time != 1 %}s{% endif %}
+                {%- endif -%}
+              </dd>
+            </div>
+          {%- endif -%}
+
+          {%- if has_material -%}
+            <div class="product-specs__row">
+              <dt class="product-specs__key">Material</dt>
+              <dd class="product-specs__value">{{ material | escape }}</dd>
+            </div>
+          {%- endif -%}
+
+          {%- if has_colors -%}
+            <div class="product-specs__row">
+              <dt class="product-specs__key">Colors</dt>
+              <dd class="product-specs__value">
+                {%- if colors_list.first -%}
+                  {%- assign colors_size = colors_list | size -%}
+                  {%- if colors_size == 1 -%}
+                    {{ colors_list | first | escape }}
+                  {%- elsif colors_size == 2 -%}
+                    {{ colors_list | first | escape }} and {{ colors_list | last | escape }}
+                  {%- else -%}
+                    {%- assign colors_last = colors_list | last -%}
+                    {%- assign colors_except_last = colors_list | reverse | shift | reverse -%}
+                    {{ colors_except_last | join: ', ' | escape }}, and {{ colors_last | escape }}
+                  {%- endif -%}
+                {%- else -%}
+                  {{ colors_list | escape }}
+                {%- endif -%}
+              </dd>
+            </div>
+          {%- endif -%}
+
+          {%- if has_lead_time -%}
+            <div class="product-specs__row">
+              <dt class="product-specs__key">Lead time</dt>
+              <dd class="product-specs__value">
+                {%- if lead_min > 0 and lead_max > 0 -%}
+                  {{ lead_min }} to {{ lead_max }} days
+                {%- elsif lead_min > 0 -%}
+                  approximately {{ lead_min }} days
+                {%- elsif lead_max > 0 -%}
+                  approximately {{ lead_max }} days
+                {%- endif -%}
+              </dd>
+            </div>
+          {%- endif -%}
+
+          {%- if has_credit -%}
+            <div class="product-specs__row">
+              <dt class="product-specs__key">Model credit</dt>
+              <dd class="product-specs__value">{{ model_credit | escape }}</dd>
+            </div>
+          {%- endif -%}
+
+          {%- if has_license -%}
+            <div class="product-specs__row">
+              <dt class="product-specs__key">License</dt>
+              <dd class="product-specs__value product-specs__value--license">{{ model_license | escape }}</dd>
+            </div>
+          {%- endif -%}
+        </dl>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    /* -----------------------------------------------------------
+       Product specifications panel — apothecary label style (§2.6 PDP)
+       ----------------------------------------------------------- */
+    .product-specs {
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+      .product-specs {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+
+    .product-specs__inner {
+      max-width: var(--page-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    @media screen and (min-width: 750px) {
+      .product-specs__inner {
+        padding: 0 5rem;
+      }
+    }
+
+    /* Chapter ornament — 120×16 SVG, gold tint, centered above heading */
+    .product-specs__chapter-ornament {
+      display: flex;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+      color: var(--color-accent-gold);
+    }
+
+    .product-specs__chapter-ornament svg {
+      width: 120px;
+      height: 16px;
+    }
+
+    /* Heading — Cormorant SC small-caps treatment */
+    .product-specs__heading {
+      font-family: var(--font-heading-family);
+      font-weight: 400;
+      font-size: 1.2rem;
+      letter-spacing: 0.12em;
+      color: var(--color-accent-gold);
+      text-align: center;
+      margin: 0 0 var(--space-5) 0;
+    }
+
+    @media screen and (max-width: 639px) {
+      .product-specs__heading {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Framed card — inset background + border + corner ornaments */
+    .product-specs__card {
+      position: relative;
+      background-color: var(--color-bg-inset);
+      border: 1px solid var(--color-border-frame);
+      padding: var(--space-6);
+    }
+
+    /* Corner ornaments — CSS-mirrored from a single TL SVG */
+    .product-specs__corner {
+      position: absolute;
+      display: flex;
+      width: 32px;
+      height: 32px;
+      color: var(--color-border-frame);
+    }
+
+    .product-specs__corner svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .product-specs__corner--tl {
+      top: -1px;
+      left: -1px;
+    }
+
+    .product-specs__corner--tr {
+      top: -1px;
+      right: -1px;
+      transform: scaleX(-1);
+    }
+
+    .product-specs__corner--bl {
+      bottom: -1px;
+      left: -1px;
+      transform: scaleY(-1);
+    }
+
+    .product-specs__corner--br {
+      bottom: -1px;
+      right: -1px;
+      transform: scale(-1, -1);
+    }
+
+    /* Definition list */
+    .product-specs__list {
+      margin: 0;
+      padding: 0;
+    }
+
+    .product-specs__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      border-top: 1px solid var(--color-border-muted);
+      padding: var(--space-3) 0;
+    }
+
+    .product-specs__row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .product-specs__row:last-child {
+      padding-bottom: 0;
+    }
+
+    /* Key — small-caps label, muted gold */
+    .product-specs__key {
+      font-family: var(--font-heading-family);
+      font-size: 1.2rem;
+      letter-spacing: 0.12em;
+      color: var(--color-fg-muted);
+      flex: 0 0 40%;
+      margin: 0;
+    }
+
+    /* Value — EB Garamond body */
+    .product-specs__value {
+      font-family: var(--font-body-family);
+      font-size: 1.6rem;
+      color: var(--color-fg-body);
+      margin: 0;
+      flex: 1;
+    }
+
+    /* License — smaller, muted (legal-footnote register) */
+    .product-specs__value--license {
+      font-size: 1.3rem;
+      color: var(--color-fg-muted);
+    }
+
+    /* Mobile — stack key above value */
+    @media screen and (max-width: 1023px) {
+      .product-specs__row {
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+
+      .product-specs__key {
+        flex: none;
+      }
+    }
+  </style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product specifications",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 28
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product specifications"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,529 @@
+{% layout none %}
+
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    {%- unless settings.type_header_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+
+    {%- assign formatted_balance = gift_card.balance | money_without_trailing_zeros | strip_html -%}
+
+    <title>{{ 'gift_cards.issued.title' | t: value: formatted_balance, shop: shop.name }}</title>
+
+    <meta name="description" content="{{ 'gift_cards.issued.subtext' | t }}">
+
+    {{ content_for_header }}
+
+    {%- liquid
+      assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+      assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
+      assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+    %}
+
+    {% style %}
+      {{ settings.type_body_font | font_face: font_display: 'swap' }}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+      {{ body_font_italic | font_face: font_display: 'swap' }}
+      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+    {% endstyle %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Cormorant+SC:wght@400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+    <style>
+      /* -----------------------------------------------------------
+         Hearts in Jars — Gift Card — Apothecary Label Aesthetic
+         ----------------------------------------------------------- */
+      :root {
+        --color-bg-canvas: #1E3D32;
+        --color-bg-surface: #264A3D;
+        --color-bg-inset: #162E26;
+        --color-fg-body: #EDE6D6;
+        --color-fg-muted: #C4B89E;
+        --color-fg-faint: #908668;
+        --color-accent-gold: #D4B57A;
+        --color-border-frame: #D4B57A;
+        --color-border-muted: rgba(212, 181, 122, 0.35);
+        --color-border-faint: rgba(212, 181, 122, 0.20);
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.5rem;
+        --space-6: 2rem;
+        --space-7: 2.5rem;
+        --space-8: 3rem;
+        --space-9: 3.5rem;
+        --space-10: 4rem;
+        --space-11: 4.5rem;
+        --space-12: 5rem;
+        --space-14: 7rem;
+        --space-16: 8rem;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      *:focus-visible {
+        outline: 2px solid var(--color-accent-gold);
+        outline-offset: 3px;
+      }
+
+      body {
+        background-color: var(--color-bg-canvas);
+        background-image:
+          radial-gradient(
+            ellipse at 50% 0%,
+            rgba(212, 181, 122, 0.055) 0%,
+            transparent 70%
+          ),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.045'/></svg>");
+        background-repeat: repeat, repeat;
+        background-size: auto, 200px 200px;
+        color: var(--color-fg-body);
+        font-family: 'EB Garamond', 'Garamond', 'Book Antiqua', Georgia, serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-12) var(--space-6);
+      }
+
+      /* -----------------------------------------------------------
+         Gift card panel
+         ----------------------------------------------------------- */
+      .gc-panel {
+        position: relative;
+        background-color: var(--color-bg-inset);
+        border: 1px solid var(--color-border-frame);
+        padding: var(--space-11) var(--space-10) var(--space-10);
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        animation: gc-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      /* Corner ornaments */
+      .gc-corner {
+        position: absolute;
+        display: flex;
+        width: 32px;
+        height: 32px;
+        color: var(--color-border-frame);
+      }
+
+      .gc-corner svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .gc-corner--tl { top: -1px; left: -1px; }
+      .gc-corner--tr { top: -1px; right: -1px; transform: scaleX(-1); }
+      .gc-corner--bl { bottom: -1px; left: -1px; transform: scaleY(-1); }
+      .gc-corner--br { bottom: -1px; right: -1px; transform: scale(-1, -1); }
+
+      /* Chapter ornament */
+      .gc-chapter {
+        display: flex;
+        justify-content: center;
+        margin-bottom: var(--space-5);
+        color: var(--color-accent-gold);
+      }
+
+      .gc-chapter svg {
+        width: 120px;
+        height: 16px;
+      }
+
+      /* "Gift Card" label */
+      .gc-label {
+        font-family: 'Cormorant Garamond', 'Garamond', Georgia, serif;
+        font-weight: 600;
+        font-size: 3rem;
+        letter-spacing: 0.04em;
+        line-height: 1.1;
+        color: var(--color-accent-gold);
+        margin-bottom: var(--space-6);
+      }
+
+      /* Shop name */
+      .gc-shop {
+        font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+        font-size: 1.2rem;
+        letter-spacing: 0.12em;
+        color: var(--color-fg-muted);
+        margin-bottom: var(--space-4);
+        text-transform: uppercase;
+      }
+
+      /* Rule divider */
+      .gc-rule {
+        display: flex;
+        justify-content: center;
+        margin: 0 auto var(--space-7);
+        color: var(--color-border-muted);
+        max-width: 200px;
+      }
+
+      .gc-rule svg {
+        width: 100%;
+        height: auto;
+      }
+
+      /* Balance amount — large, bold */
+      .gc-balance {
+        font-family: 'Cormorant Garamond', 'Garamond', Georgia, serif;
+        font-weight: 700;
+        font-size: clamp(4rem, 8vw, 4.8rem);
+        letter-spacing: 0.02em;
+        line-height: 1;
+        color: var(--color-fg-body);
+        margin-bottom: var(--space-4);
+      }
+
+      /* Expired badge */
+      .gc-expired {
+        display: inline-block;
+        font-family: 'Cormorant SC', Georgia, serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.10em;
+        color: var(--color-fg-faint);
+        border: 1px solid var(--color-fg-faint);
+        padding: var(--space-1) var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+
+      /* Expiry text */
+      .gc-expiry {
+        font-family: 'EB Garamond', Georgia, serif;
+        font-size: 1.4rem;
+        color: var(--color-fg-muted);
+        margin-bottom: var(--space-6);
+      }
+
+      /* How-to-use text */
+      .gc-howto {
+        font-family: 'EB Garamond', Georgia, serif;
+        font-style: italic;
+        font-size: 1.5rem;
+        color: var(--color-fg-muted);
+        line-height: 1.5;
+        margin-bottom: var(--space-6);
+      }
+
+      /* Gift card code */
+      .gc-code {
+        display: inline-block;
+        font-family: 'Courier New', 'Courier', monospace;
+        font-size: 1.7rem;
+        letter-spacing: 0.15em;
+        color: var(--color-fg-body);
+        background-color: var(--color-bg-canvas);
+        border: 1px solid var(--color-accent-gold);
+        padding: var(--space-3) var(--space-6);
+        margin-bottom: var(--space-7);
+        word-break: break-all;
+      }
+
+      /* QR code */
+      .gc-qr {
+        display: flex;
+        justify-content: center;
+        margin-bottom: var(--space-7);
+        /* Invert QR colors so it reads on dark background */
+        filter: invert(1) hue-rotate(180deg);
+      }
+
+      /* Apple Wallet link */
+      .gc-apple-wallet {
+        display: flex;
+        justify-content: center;
+        margin-bottom: var(--space-7);
+      }
+
+      /* Action buttons */
+      .gc-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        align-items: center;
+      }
+
+      @media screen and (min-width: 480px) {
+        .gc-actions {
+          flex-direction: row;
+          justify-content: center;
+        }
+      }
+
+      .gc-btn {
+        display: inline-block;
+        padding: var(--space-3) var(--space-8);
+        font-family: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+        font-size: 1.2rem;
+        letter-spacing: 0.12em;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid var(--color-accent-gold);
+        transition: background-color 180ms ease, color 180ms ease;
+      }
+
+      .gc-btn--primary {
+        background-color: var(--color-accent-gold);
+        color: var(--color-bg-canvas);
+      }
+
+      .gc-btn--primary:hover,
+      .gc-btn--primary:focus-visible {
+        background-color: transparent;
+        color: var(--color-accent-gold);
+      }
+
+      .gc-btn--secondary {
+        background-color: transparent;
+        color: var(--color-accent-gold);
+      }
+
+      .gc-btn--secondary:hover,
+      .gc-btn--secondary:focus-visible {
+        background-color: var(--color-accent-gold);
+        color: var(--color-bg-canvas);
+      }
+
+      /* Copy success message */
+      .gc-copy-success {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        font-family: 'EB Garamond', Georgia, serif;
+        font-size: 1.4rem;
+        color: var(--color-fg-muted);
+        min-height: 1.5em;
+        margin-bottom: var(--space-3);
+      }
+
+      /* Print styles */
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .gc-panel {
+          border-color: #ccc;
+          animation: none;
+        }
+
+        .gc-btn,
+        .gc-apple-wallet,
+        .no-print {
+          display: none !important;
+        }
+
+        .gc-code {
+          background: #f5f5f5;
+          border-color: #999;
+          color: #000;
+        }
+
+        .gc-balance,
+        .gc-label {
+          color: #333;
+        }
+      }
+
+      /* Entrance animation */
+      @keyframes gc-rise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Mobile */
+      @media screen and (max-width: 479px) {
+        .gc-panel {
+          padding: var(--space-8) var(--space-5) var(--space-7);
+        }
+
+        .gc-code {
+          font-size: 1.4rem;
+          padding: var(--space-3) var(--space-4);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="gift-card">
+
+    <main>
+      <div class="gc-panel">
+
+        {%- comment -%} Corner ornaments {%- endcomment -%}
+        <span class="gc-corner gc-corner--tl" aria-hidden="true">
+          {{ 'ornament-corner-tl.svg' | inline_asset_content }}
+        </span>
+        <span class="gc-corner gc-corner--tr" aria-hidden="true">
+          {{ 'ornament-corner-tl.svg' | inline_asset_content }}
+        </span>
+        <span class="gc-corner gc-corner--bl" aria-hidden="true">
+          {{ 'ornament-corner-tl.svg' | inline_asset_content }}
+        </span>
+        <span class="gc-corner gc-corner--br" aria-hidden="true">
+          {{ 'ornament-corner-tl.svg' | inline_asset_content }}
+        </span>
+
+        {%- comment -%} Chapter ornament {%- endcomment -%}
+        <div class="gc-chapter" aria-hidden="true">
+          {{ 'ornament-chapter.svg' | inline_asset_content }}
+        </div>
+
+        {%- comment -%} Shop name as small-caps label {%- endcomment -%}
+        <p class="gc-shop">{{ shop.name }}</p>
+
+        {%- comment -%} Diamond rule {%- endcomment -%}
+        <div class="gc-rule" aria-hidden="true">
+          {{ 'ornament-rule-diamond.svg' | inline_asset_content }}
+        </div>
+
+        {%- comment -%} Gift Card heading {%- endcomment -%}
+        <h1 class="gc-label">Gift Card</h1>
+
+        {%- comment -%}
+          Balance value — Dawn's money filter handles currency formatting.
+          Preserved exactly from original Dawn template.
+        {%- endcomment -%}
+        <p class="gc-balance">
+          {%- if settings.currency_code_enabled -%}
+            {{ gift_card.balance | money_with_currency }}
+          {%- else -%}
+            {{ gift_card.balance | money }}
+          {%- endif -%}
+        </p>
+
+        {%- comment -%} Expired badge — Dawn logic preserved {%- endcomment -%}
+        {%- if gift_card.enabled == false or gift_card.expired -%}
+          <p class="gc-expired">{{ 'gift_cards.issued.expired' | t }}</p>
+        {%- endif -%}
+
+        {%- comment -%} Expiry date — Dawn logic preserved {%- endcomment -%}
+        {%- if gift_card.expires_on -%}
+          {%- assign gift_card_expiration_date = gift_card.expires_on | date: '%B %e, %Y' -%}
+          <p class="gc-expiry">
+            {{ 'gift_cards.issued.expiration_date' | t: expires_on: gift_card_expiration_date }}
+          </p>
+        {%- endif -%}
+
+        {%- comment -%} How-to-use copy {%- endcomment -%}
+        <p class="gc-howto">{{ 'gift_cards.issued.how_to_use_gift_card' | t }}</p>
+
+        {%- comment -%}
+          Gift card code — Dawn's format_code filter preserved.
+          id="gift-card-code" needed for the copy-button JS below.
+        {%- endcomment -%}
+        <code id="gift-card-code" class="gc-code">{{ gift_card.code | format_code }}</code>
+
+        {%- comment -%}
+          QR code — Dawn's data-identifier attribute preserved for qrcode.js.
+        {%- endcomment -%}
+        <div class="gc-qr gift-card__qr-code" data-identifier="{{ gift_card.qr_identifier }}"></div>
+
+        {%- comment -%} Apple Wallet — Dawn logic preserved {%- endcomment -%}
+        {%- if gift_card.pass_url -%}
+          <div class="gc-apple-wallet no-print">
+            <a href="{{ gift_card.pass_url }}" class="gift_card__apple-wallet">
+              <img
+                src="{{ 'gift-card/add-to-apple-wallet.svg' | shopify_asset_url }}"
+                width="120"
+                height="40"
+                alt="{{ 'gift_cards.issued.add_to_apple_wallet' | t }}"
+                loading="lazy"
+              >
+            </a>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%}
+          Action buttons — copy-button JS targets .gift-card__copy-button.
+          Dawn's <template> for success message preserved exactly.
+        {%- endcomment -%}
+        <div class="gc-actions no-print">
+          <span class="gc-copy-success gift-card__copy-success form__message" role="status"></span>
+          <template>
+            <span class="svg-wrapper">
+              {{- 'icon-success.svg' | inline_asset_content -}}
+            </span>
+            {{ 'gift_cards.issued.copy_code_success' | t }}
+          </template>
+          <button class="gc-btn gc-btn--primary gift-card__copy-button">
+            {{ 'gift_cards.issued.copy_code' | t }}
+          </button>
+          <a
+            href="{{ shop.url }}"
+            class="gc-btn gc-btn--secondary"
+            target="_blank"
+            rel="noopener"
+            aria-describedby="a11y-new-window-message"
+          >
+            {{ 'gift_cards.issued.shop_link' | t }}
+          </a>
+        </div>
+
+      </div>
+    </main>
+
+    <div hidden>
+      <span id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</span>
+    </div>
+
+  </body>
+</html>
+
+<script>
+  var string = { qrImageAlt: {{ 'gift_cards.issued.qr_image_alt' | t | json }} };
+  document.addEventListener('DOMContentLoaded', function() {
+    new QRCode( document.querySelector('.gift-card__qr-code'), {
+      text: document.querySelector('.gift-card__qr-code').dataset.identifier,
+      width: 72,
+      height: 72,
+      imageAltText: string.qrImageAlt
+    });
+  });
+  var template = document.getElementsByTagName("template")[0];
+  var clonedTemplate = template.content.cloneNode(true);
+  var isMessageDisplayed = false;
+  document
+    .querySelector('.gift-card__copy-button')
+    .addEventListener('click', () => {
+      navigator.clipboard.writeText(document.getElementById('gift-card-code').innerText).then(function () {
+        if (!isMessageDisplayed) {
+          document.querySelector('.gift-card__copy-success').appendChild(clonedTemplate);
+          isMessageDisplayed = true;
+        }
+      });
+    });
+</script>

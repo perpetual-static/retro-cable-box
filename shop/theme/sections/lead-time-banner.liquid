@@ -1,0 +1,146 @@
+{%- assign lead_time_message = shop.metafields.compendium.lead_time_message | default: '' -%}
+
+{%- if lead_time_message != blank -%}
+  <div
+    id="LeadTimeBanner"
+    class="lead-time-banner"
+    role="region"
+    aria-label="Lead time information"
+  >
+    <div class="lead-time-banner__body">
+      <span class="lead-time-banner__ornament" aria-hidden="true">{{ 'ornament-diamond.svg' | inline_asset_content }}</span>
+      <p class="lead-time-banner__text"><span class="lead-time-banner__prefix">MADE TO ORDER · </span><span class="lead-time-banner__message">{{ lead_time_message | escape }}</span></p>
+      <span class="lead-time-banner__ornament" aria-hidden="true">{{ 'ornament-diamond.svg' | inline_asset_content }}</span>
+    </div>
+    <button
+      class="lead-time-banner__close"
+      type="button"
+      aria-label="Dismiss announcement"
+      data-ltb-message="{{ lead_time_message | sha256 | truncate: 12, '' }}"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <style>
+    .lead-time-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 3.6rem;
+      padding: var(--space-3) var(--space-5);
+      padding-right: calc(var(--space-5) + 4.4rem); /* room for the dismiss button */
+      background-color: var(--color-accent-copper);
+      color: var(--color-fg-body);
+      border-bottom: 1px solid var(--color-border-frame);
+    }
+
+    .lead-time-banner[hidden] {
+      display: none;
+    }
+
+    .lead-time-banner__body {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .lead-time-banner__ornament {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      color: var(--color-accent-gold);
+    }
+
+    .lead-time-banner__ornament svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .lead-time-banner__text {
+      margin: 0;
+      font-family: var(--font-body-family);
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .lead-time-banner__prefix {
+      font-family: var(--font-heading-family);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .lead-time-banner__close {
+      position: absolute;
+      right: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 4.4rem;
+      height: 4.4rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.6;
+      font-size: 1.6rem;
+      line-height: 1;
+      padding: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .lead-time-banner__close:hover,
+    .lead-time-banner__close:focus-visible {
+      opacity: 1;
+    }
+
+    .lead-time-banner__close:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var banner = document.getElementById('LeadTimeBanner');
+      var closeBtn = banner && banner.querySelector('.lead-time-banner__close');
+
+      if (!banner || !closeBtn) return;
+
+      var messageKey = closeBtn.getAttribute('data-ltb-message');
+      var storageKey = 'ltb-dismissed-' + messageKey;
+
+      if (localStorage.getItem(storageKey) === '1') {
+        banner.hidden = true;
+        return;
+      }
+
+      closeBtn.addEventListener('click', function () {
+        banner.hidden = true;
+        try {
+          localStorage.setItem(storageKey, '1');
+        } catch (e) {}
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Lead time banner",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Lead time banner"
+    }
+  ]
+}
+{% endschema %}

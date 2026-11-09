@@ -1,0 +1,214 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "retro_hero": {
+      "type": "retro-hero",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "channel": "CH 03",
+        "title": "Retro Cable Box",
+        "text": "<p>A 90s cable box for your TV. Flip through a lineup that is always on and always mid-show, programmed by your AI agent.</p>",
+        "button_label": "Get the box",
+        "button_link": "/products/retro-cable-box",
+        "button2_label": "Build your own",
+        "button2_link": "https://rossnelson.github.io/myvoiceismypassport/"
+      }
+    },
+    "whats_on": {
+      "type": "retro-channels",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "kicker": "WHAT'S ON",
+        "heading": "Cable TV, the way you remember it"
+      },
+      "blocks": {
+        "r0": {
+          "type": "row",
+          "settings": {
+            "num": "2",
+            "name": "ALWAYS ON",
+            "text": "<p>Every channel runs on a shared clock. When you tune in, the show is already underway, just like real TV.</p>"
+          }
+        },
+        "r1": {
+          "type": "row",
+          "settings": {
+            "num": "3",
+            "name": "YOUR AGENT",
+            "text": "<p>Claude, ChatGPT or any MCP client programs your channels: “make me a Saturday-morning cartoon channel on 11.”</p>"
+          }
+        },
+        "r2": {
+          "type": "row",
+          "settings": {
+            "num": "4",
+            "name": "THE GUIDE",
+            "text": "<p>A scrolling 90s channel guide with the picture in the corner, an info banner, and static between channels.</p>"
+          }
+        },
+        "r3": {
+          "type": "row",
+          "settings": {
+            "num": "5",
+            "name": "YOUR REMOTE",
+            "text": "<p>HDMI-CEC turns the TV remote you already have into the cable remote. Type a channel number, flip, surf.</p>"
+          }
+        },
+        "r4": {
+          "type": "row",
+          "settings": {
+            "num": "6",
+            "name": "PUBLIC DOMAIN",
+            "text": "<p>Starts with school films, NASA missions, classic movies and vintage ads. Add your own files and channel packs.</p>"
+          }
+        },
+        "r5": {
+          "type": "row",
+          "settings": {
+            "num": "7",
+            "name": "YOURS",
+            "text": "<p>No account and no subscription. The box runs on your home network, and you decide what plays.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "r0",
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5"
+      ]
+    },
+    "the_box": {
+      "type": "featured-product",
+      "settings": {
+        "product": "retro-cable-box",
+        "color_scheme": "scheme-2",
+        "secondary_background": false,
+        "media_size": "medium",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "padding_top": 48,
+        "padding_bottom": 48
+      },
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "Raspberry Pi 5 in a printed case, software installed, starter lineup on the air. Power supply and HDMI cable included.",
+            "text_style": "body"
+          }
+        },
+        "buy": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "price",
+        "text",
+        "buy"
+      ],
+      "disabled": true
+    },
+    "how": {
+      "type": "retro-channels",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "kicker": "HOW IT WORKS",
+        "heading": "Three steps to cable"
+      },
+      "blocks": {
+        "r0": {
+          "type": "row",
+          "settings": {
+            "num": "1",
+            "name": "PLUG IN",
+            "text": "<p>Connect the box to your TV with HDMI and power it on. The starter lineup is already on the air.</p>"
+          }
+        },
+        "r1": {
+          "type": "row",
+          "settings": {
+            "num": "2",
+            "name": "CONNECT",
+            "text": "<p>Type 0 on the remote. Channel 0 shows the address and token for your AI agent.</p>"
+          }
+        },
+        "r2": {
+          "type": "row",
+          "settings": {
+            "num": "3",
+            "name": "ASK",
+            "text": "<p>Tell your agent what you want to watch. New channels appear in the guide in seconds.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "r0",
+        "r1",
+        "r2"
+      ]
+    },
+    "waitlist": {
+      "type": "newsletter",
+      "settings": {
+        "color_scheme": "scheme-5",
+        "full_width": true,
+        "padding_top": 48,
+        "padding_bottom": 56
+      },
+      "blocks": {
+        "h": {
+          "type": "heading",
+          "settings": {
+            "heading": "Get on the list",
+            "heading_size": "h1"
+          }
+        },
+        "p": {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>The first boxes are being built now. Leave your email and we will tell you when they ship.</p>"
+          }
+        },
+        "f": {
+          "type": "email_form",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "h",
+        "p",
+        "f"
+      ]
+    }
+  },
+  "order": [
+    "retro_hero",
+    "whats_on",
+    "the_box",
+    "how",
+    "waitlist"
+  ]
+}
