@@ -1,0 +1,6 @@
+[Unit]
+Description=Retro Cable Box (all services)
+Wants=box-temporal.service box-worker.service box-mcp.service box-api.service box-player.service
+
+[Install]
+WantedBy=multi-user.target

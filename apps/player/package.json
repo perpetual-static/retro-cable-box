@@ -1,0 +1,30 @@
+{
+  "name": "@box/player",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --host 127.0.0.1 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@box/core": "workspace:*",
+    "hls.js": "1.5.20"
+  },
+  "devDependencies": {
+    "@fontsource/archivo-black": "^5.1.0",
+    "@fontsource/archivo-narrow": "^5.1.0",
+    "@fontsource/vt323": "^5.1.0",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.15.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "qrcode-generator": "1.4.4",
+    "svelte": "^5.16.0",
+    "svelte-check": "^4.1.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  },
+  "license": "PolyForm-Noncommercial-1.0.0"
+}

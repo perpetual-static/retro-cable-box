@@ -1,0 +1,13 @@
+[Unit]
+Description=Retro Cable Box: TV remote over HDMI-CEC → key presses
+After=box-player.service
+PartOf=box.target
+
+[Service]
+# Root: it creates a virtual keyboard with /dev/uinput and talks to /dev/cec0.
+ExecStart=/usr/bin/python3 @BOX_DIR@/image/bin/box-cec.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=box.target

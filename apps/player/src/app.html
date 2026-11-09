@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="theme-color" content="#000000" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<title>Retro Cable Box</title>
+		<!-- Black before any script runs: a TV is never white. -->
+		<style>html, body { margin: 0; background: #000; color: #7dff7a; }</style>
+		%sveltekit.head%
+	</head>
+	<body>
+		<div style="display: contents">%sveltekit.body%</div>
+		<noscript><p style="font-family: monospace; padding: 2em">PLEASE STAND BY. This TV needs JavaScript.</p></noscript>
+	</body>
+</html>

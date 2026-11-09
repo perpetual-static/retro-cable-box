@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Update the box to the latest code on a branch or tag (default: main), rebuild,
+# and restart. Your channels are kept: they live in Temporal, not in the code.
+#   sudo box-update            # latest main
+#   sudo box-update v0.2.0     # a tag
+set -euo pipefail
+export BOX_REF="${1:-main}"
+dir="${BOX_DIR:-/opt/retro-cable-box}"
+# Run a copy: the install script resets the checkout it lives in.
+tmp="$(mktemp /tmp/box-install.XXXXXX.sh)"
+cp "$dir/image/install.sh" "$tmp"
+exec bash "$tmp"

@@ -1,0 +1,16 @@
+[Unit]
+Description=Retro Cable Box: Temporal server (SQLite file in @BOX_DATA@)
+After=network.target
+PartOf=box.target
+
+[Service]
+User=@BOX_USER@
+EnvironmentFile=/etc/box/box.env
+# The Temporal UI listens on localhost only. From a laptop: ssh -L 8233:localhost:8233 <box>
+ExecStart=/usr/local/bin/temporal server start-dev --ip 127.0.0.1 --port 7233 --ui-port 8233 \
+  --namespace box --db-filename @BOX_DATA@/temporal.db --log-level warn
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=box.target

@@ -1,0 +1,43 @@
+@import '@fontsource/vt323/400.css';
+@import '@fontsource/archivo-black/400.css';
+@import '@fontsource/archivo-narrow/500.css';
+@import '@fontsource/archivo-narrow/700.css';
+
+:root {
+	--black: #000;
+	--white: #f4f4ee;
+	--osd: #5dff6a;
+	--osd-glow: rgba(93, 255, 106, 0.55);
+	--yellow: #ffd23a;
+	--navy: #070c3d;
+	--grid: #1b34a8;
+	--grid-dark: #0f1d6e;
+	--grid-hi: #3d63ff;
+	--red: #ff3b3b;
+	--font-osd: 'VT323', ui-monospace, monospace;
+	--font-head: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+	--font-body: 'Archivo Narrow', 'Arial Narrow', system-ui, sans-serif;
+	color-scheme: dark;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+	/* Phones: the visible screen, not the height with the browser bars hidden. */
+	height: 100dvh;
+	background: var(--black);
+	color: var(--white);
+	font-family: var(--font-body);
+	overflow: hidden;
+	cursor: none;
+	-webkit-font-smoothing: antialiased;
+}
+
+body.pointer {
+	cursor: default;
+}

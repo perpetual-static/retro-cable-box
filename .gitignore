@@ -1,0 +1,14 @@
+node_modules
+.omc
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+dist
+build
+.svelte-kit
+.temporal
+media
+docs/_site
+.task/

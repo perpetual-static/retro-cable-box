@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "name": "Starter Lineup",
+  "description": "Public-domain channels so the box does something on first boot. Every item here is marked public domain on archive.org or is a NASA work. Vet before you ship (plan.md open decision 6).",
+  "channels": [
+    {
+      "id": "school-films",
+      "num": 2,
+      "name": "SCHOOL FILMS",
+      "category": "Educational",
+      "blurb": "Mid-century classroom films about posture, colds, bananas and staying alive.",
+      "sources": [
+        { "source": { "kind": "archive", "identifier": "DuckandC1951", "file": "DuckandC1951_512kb.mp4" } },
+        { "source": { "kind": "archive", "identifier": "AboutBan1935", "file": "AboutBan1935.mp4" } },
+        { "source": { "kind": "archive", "identifier": "Sleepfor1950", "file": "Sleepfor1950.mp4" } },
+        { "source": { "kind": "archive", "identifier": "JoanAvoi1947", "file": "JoanAvoi1947.mp4" } },
+        { "source": { "kind": "archive", "identifier": "EatforHe1954", "file": "EatforHe1954.mp4" } },
+        { "source": { "kind": "archive", "identifier": "HealthYo1953", "file": "HealthYo1953.mp4" } },
+        { "source": { "kind": "archive", "identifier": "Careofth1949", "file": "Careofth1949.mp4" } },
+        { "source": { "kind": "archive", "identifier": "OneGotFa1963", "file": "OneGotFa1963.mp4" } },
+        { "source": { "kind": "archive", "identifier": "Automoti1940", "file": "Automoti1940.mp4" } }
+      ]
+    },
+    {
+      "id": "toon-lab",
+      "num": 3,
+      "name": "TOON LAB",
+      "category": "Cartoons",
+      "blurb": "Black-and-white rubber-hose cartoons from the 1930s.",
+      "rules": { "shuffleSeed": 1993 },
+      "sources": [
+        { "source": { "kind": "archive", "identifier": "bb_snow_white" } },
+        { "source": { "kind": "archive", "identifier": "bb_minnie_the_moocher" } },
+        { "source": { "kind": "archive", "identifier": "bb_and_grampy" } },
+        { "source": { "kind": "archive", "identifier": "bb_bamboo_isle" } },
+        { "source": { "kind": "archive", "identifier": "bb_rise_to_fame" } },
+        { "source": { "kind": "archive", "identifier": "bb_and_the_little_king" } },
+        { "source": { "kind": "archive", "identifier": "bb_be_human" } },
+        { "source": { "kind": "archive", "identifier": "bb_big_boss" } },
+        { "source": { "kind": "archive", "identifier": "JackFrost_" } }
+      ]
+    },
+    {
+      "id": "mission-control",
+      "num": 4,
+      "name": "MISSION CONTROL",
+      "category": "Space",
+      "blurb": "NASA film from Mercury to Apollo. Onboard 16mm, launches and overviews.",
+      "sources": [
+        { "source": { "kind": "archive", "identifier": "MercurygeminiapolloOverview" } },
+        { "source": { "kind": "archive", "identifier": "ManInSpace" } },
+        { "source": { "kind": "archive", "identifier": "APOLLO16MMLAUNCHVIEWS" } },
+        { "source": { "kind": "archive", "identifier": "Apollo1116mmOnboardFilm" } },
+        { "source": { "kind": "archive", "identifier": "Apollo15And1616mmOnboardFilm" } }
+      ]
+    },
+    {
+      "id": "creature-feature",
+      "num": 5,
+      "name": "CREATURE FEATURE",
+      "category": "Movies",
+      "blurb": "Late-night horror and sci-fi double features.",
+      "sources": [
+        { "source": { "kind": "archive", "identifier": "night_of_the_living_dead_dvd", "file": "Night.mp4" }, "title": "Night of the Living Dead" },
+        { "source": { "kind": "archive", "identifier": "CarnivalofSouls" }, "title": "Carnival of Souls" },
+        { "source": { "kind": "archive", "identifier": "house_on_haunted_hill_ipod" }, "title": "House on Haunted Hill" },
+        { "source": { "kind": "archive", "identifier": "teenagers_from_outerspace" }, "title": "Teenagers from Outer Space" }
+      ]
+    },
+    {
+      "id": "matinee",
+      "num": 6,
+      "name": "MATINEE",
+      "category": "Movies",
+      "blurb": "Screwball, noir and silent comedy.",
+      "sources": [
+        { "source": { "kind": "archive", "identifier": "his_girl_friday" }, "title": "His Girl Friday" },
+        { "source": { "kind": "archive", "identifier": "Detour" }, "title": "Detour" },
+        { "source": { "kind": "archive", "identifier": "charlie_chaplin_film_fest" }, "title": "Charlie Chaplin Festival" }
+      ]
+    },
+    {
+      "id": "ad-break",
+      "num": 7,
+      "name": "AD BREAK",
+      "category": "Commercials",
+      "blurb": "Nothing but vintage commercials, around the clock.",
+      "rules": { "shuffleSeed": 1990 },
+      "sources": [
+        { "source": { "kind": "archive", "identifier": "ClassicT1948", "file": "ClassicT1948.mp4" } },
+        { "source": { "kind": "archive", "identifier": "ClassicT1948_2", "file": "ClassicT1948_2.mp4" } },
+        { "source": { "kind": "archive", "identifier": "ClassicT1948_3", "file": "ClassicT1948_3.mp4" } },
+        { "source": { "kind": "archive", "identifier": "ClassicT1948_4", "file": "ClassicT1948_4.mp4" } },
+        { "source": { "kind": "archive", "identifier": "Televisi1960", "file": "Televisi1960.mp4" } },
+        { "source": { "kind": "archive", "identifier": "Wonderfu1960", "file": "Wonderfu1960.mp4" } }
+      ]
+    },
+    {
+      "id": "time-temp",
+      "num": 8,
+      "name": "TIME & TEMP",
+      "kind": "card",
+      "card": "clock",
+      "category": "Info",
+      "blurb": "The time, all the time. Smooth jazz not included."
+    },
+    {
+      "id": "bulletin-board",
+      "num": 9,
+      "name": "BULLETIN BOARD",
+      "kind": "card",
+      "card": "notices",
+      "category": "Info",
+      "blurb": "Box news, updates and warnings."
+    }
+  ]
+}

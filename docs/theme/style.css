@@ -1,0 +1,396 @@
+/* The docs site wears the box's own look: the 90s guide (apps/player/src/app.css). */
+:root {
+	--black: #000;
+	--white: #f4f4ee;
+	--osd: #5dff6a;
+	--osd-glow: rgba(93, 255, 106, 0.55);
+	--yellow: #ffd23a;
+	--navy: #070c3d;
+	--grid: #1b34a8;
+	--grid-dark: #0f1d6e;
+	--grid-hi: #3d63ff;
+	--red: #ff3b3b;
+	--edge: #6f8cff;
+	--font-osd: 'VT323', ui-monospace, monospace;
+	--font-head: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+	--font-body: 'Archivo Narrow', 'Arial Narrow', system-ui, sans-serif;
+	color-scheme: dark;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	background: var(--black);
+}
+body {
+	margin: 0;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: linear-gradient(180deg, #0d1866 0, var(--navy) 18rem) no-repeat, var(--navy);
+	color: var(--white);
+	font-family: var(--font-body);
+	font-weight: 500;
+	font-size: 1.2rem;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: var(--yellow);
+}
+a:hover {
+	color: #fff;
+}
+
+/* ── header: brand and the on-screen display ─────────────────────────── */
+.top {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	padding: 1.2rem clamp(1rem, 4vw, 3rem) 0.8rem;
+}
+.brand {
+	font-family: var(--font-head);
+	font-size: clamp(1.6rem, 4vw, 2.4rem);
+	letter-spacing: 0.04em;
+	color: var(--yellow);
+	text-decoration: none;
+	text-shadow: 0.2rem 0.2rem 0 #b0302a;
+	white-space: nowrap;
+}
+.osd {
+	display: flex;
+	align-items: baseline;
+	gap: 0.8rem;
+	font-family: var(--font-osd);
+	color: var(--osd);
+	text-shadow: 0 0 0.5rem var(--osd-glow);
+	white-space: nowrap;
+}
+.osd .ch {
+	font-size: 2.6rem;
+	line-height: 1;
+}
+.osd .chname {
+	font-size: 1.5rem;
+	letter-spacing: 0.1em;
+}
+.osd .clock {
+	font-size: 1.8rem;
+	color: var(--white);
+	text-shadow: none;
+	margin-left: 0.6rem;
+}
+
+/* ── layout: the guide on the left, the screen on the right ──────────── */
+.layout {
+	flex: 1;
+	display: grid;
+	grid-template-columns: 15rem minmax(0, 1fr);
+	gap: 1.2rem;
+	padding: 0 clamp(1rem, 4vw, 3rem) 2rem;
+	max-width: 82rem;
+	width: 100%;
+	margin: 0 auto;
+	align-items: start;
+}
+
+.guide {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	position: sticky;
+	top: 1rem;
+}
+.guide .row {
+	display: grid;
+	grid-template-columns: 3rem 1fr;
+	align-items: center;
+	min-height: 2.8rem;
+	background: linear-gradient(180deg, var(--grid), var(--grid-dark));
+	border: 1px solid #000;
+	color: var(--white);
+	text-decoration: none;
+}
+.guide .row .n {
+	font-family: var(--font-head);
+	font-size: 1.15rem;
+	text-align: center;
+	color: var(--yellow);
+}
+.guide .row .nm {
+	font-family: var(--font-head);
+	font-size: 1rem;
+	letter-spacing: 0.05em;
+	padding: 0 0.8rem;
+}
+.guide .row:hover,
+.guide .row.on {
+	background: linear-gradient(180deg, #ffe680, var(--yellow));
+	color: #101010;
+}
+.guide .row:hover .n,
+.guide .row.on .n {
+	color: #101010;
+}
+.guide .row.head {
+	min-height: 2rem;
+	background: none;
+	border: none;
+	font-family: var(--font-osd);
+}
+.guide .row.head .n,
+.guide .row.head .nm {
+	font-family: var(--font-osd);
+	font-size: 1.2rem;
+	color: var(--osd);
+}
+.guide .row.repo {
+	margin-top: 0.8rem;
+	background: none;
+	border: 1px dashed var(--edge);
+}
+
+.screen {
+	min-width: 0;
+	background: rgba(4, 8, 40, 0.75);
+	border: 0.25rem solid var(--edge);
+	box-shadow: 0 0 0 0.25rem #000, 0 1rem 3rem rgba(0, 0, 0, 0.5);
+	padding: clamp(1rem, 3vw, 2.4rem);
+}
+
+/* ── content ─────────────────────────────────────────────────────────── */
+h1,
+h2,
+h3 {
+	font-family: var(--font-head);
+	font-weight: 400;
+	letter-spacing: 0.03em;
+	line-height: 1.15;
+	color: var(--yellow);
+}
+h1 {
+	font-size: clamp(2rem, 5vw, 3rem);
+	margin: 0 0 1rem;
+	text-shadow: 0.15rem 0.15rem 0 #b0302a;
+}
+h2 {
+	font-size: 1.5rem;
+	margin: 2.4rem 0 0.8rem;
+	padding-bottom: 0.3rem;
+	border-bottom: 2px solid var(--grid-hi);
+}
+h3 {
+	font-size: 1.15rem;
+	margin: 1.8rem 0 0.6rem;
+	color: var(--white);
+}
+p,
+li {
+	max-width: 46rem;
+}
+strong {
+	font-weight: 700;
+}
+img {
+	max-width: 100%;
+	height: auto;
+	border: 0.25rem solid var(--edge);
+	box-shadow: 0 0 0 0.25rem #000;
+	display: block;
+	margin: 1.2rem 0;
+}
+
+code {
+	font-family: var(--font-osd);
+	font-size: 1.15em;
+	color: var(--osd);
+	background: rgba(0, 0, 0, 0.45);
+	padding: 0 0.3em;
+}
+/* Long addresses in running text must wrap on a phone. */
+:not(pre) > code {
+	overflow-wrap: anywhere;
+}
+pre {
+	background: #000;
+	border: 1px solid var(--grid-hi);
+	padding: 1rem 1.2rem;
+	overflow-x: auto;
+	line-height: 1.25;
+}
+pre code {
+	background: none;
+	padding: 0;
+	font-size: 1.15rem;
+	text-shadow: 0 0 0.4rem var(--osd-glow);
+}
+
+blockquote {
+	margin: 1.2rem 0;
+	padding: 0.8rem 1.2rem;
+	background: linear-gradient(180deg, rgba(14, 28, 120, 0.94), rgba(6, 12, 60, 0.94));
+	border-left: 0.4rem solid var(--yellow);
+}
+blockquote p {
+	margin: 0.3rem 0;
+}
+
+/* Tables look like the guide grid. */
+table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0.2rem;
+	margin: 1rem 0;
+	font-size: 1.05rem;
+}
+th {
+	font-family: var(--font-osd);
+	font-weight: 400;
+	font-size: 1.2rem;
+	color: var(--osd);
+	text-align: left;
+	padding: 0.2rem 0.6rem;
+}
+td {
+	background: linear-gradient(180deg, var(--grid), var(--grid-dark));
+	padding: 0.5rem 0.7rem;
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+td:first-child {
+	font-weight: 700;
+}
+td.n,
+th.n {
+	text-align: right;
+	white-space: nowrap;
+}
+tr.total td {
+	background: #000;
+	color: var(--yellow);
+	font-family: var(--font-head);
+}
+tr.sub td {
+	background: none;
+	font-family: var(--font-osd);
+	color: var(--osd);
+	padding-top: 1rem;
+}
+table.tools td:first-child {
+	white-space: nowrap;
+}
+.table-wrap {
+	overflow-x: auto;
+}
+
+.notice {
+	font-family: var(--font-osd);
+	font-size: 1.4rem;
+	color: var(--osd);
+	background: #000;
+	border: 1px solid var(--grid-hi);
+	padding: 0.8rem 1rem;
+}
+.notice a {
+	color: var(--yellow);
+}
+.button {
+	display: inline-block;
+	font-family: var(--font-head);
+	font-size: 1.4rem;
+	letter-spacing: 0.05em;
+	color: #101010;
+	background: var(--yellow);
+	padding: 0.7rem 1.6rem;
+	text-decoration: none;
+	box-shadow: 0.3rem 0.3rem 0 #b0302a;
+}
+.button:hover {
+	color: #101010;
+	background: #fff;
+}
+.files {
+	list-style: none;
+	padding: 0;
+}
+.files li {
+	padding: 0.3rem 0;
+}
+.dim {
+	opacity: 0.7;
+	font-size: 0.9em;
+}
+
+.bottom {
+	font-family: var(--font-osd);
+	font-size: 1.2rem;
+	letter-spacing: 0.06em;
+	text-align: center;
+	opacity: 0.7;
+	padding: 1rem;
+}
+
+/* ── phones: the guide becomes a strip of channels under the header ──── */
+@media (max-width: 760px) {
+	body {
+		font-size: 1.1rem;
+	}
+	.layout {
+		grid-template-columns: minmax(0, 1fr);
+		padding: 0 1rem 1.5rem;
+	}
+	.guide {
+		position: static;
+		flex-direction: row;
+		overflow-x: auto;
+		gap: 0.25rem;
+		padding-bottom: 0.3rem;
+	}
+	.guide .row {
+		flex: none;
+		grid-template-columns: auto auto;
+		gap: 0.4rem;
+		padding: 0 0.7rem;
+		min-height: 2.4rem;
+	}
+	.guide .row .nm {
+		padding: 0;
+		font-size: 0.9rem;
+	}
+	.guide .row.head {
+		display: none;
+	}
+	.guide .row.repo {
+		margin-top: 0;
+	}
+	.osd .chname {
+		display: none;
+	}
+	.top {
+		padding: 1rem 1rem 0.6rem;
+		flex-wrap: wrap;
+	}
+	.brand {
+		font-size: 1.5rem;
+	}
+	.osd .ch {
+		font-size: 2rem;
+	}
+	.osd .clock {
+		font-size: 1.4rem;
+		margin-left: 0;
+	}
+	td,
+	th {
+		font-size: 0.95rem;
+	}
+	table.tools td:first-child {
+		white-space: normal;
+		word-break: break-all;
+	}
+}

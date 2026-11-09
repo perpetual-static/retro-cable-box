@@ -1,0 +1,8 @@
+#!/bin/sh
+# Weekly lineup backup: a portable lineup file you can import on any box.
+# Keeps the newest 8.
+set -eu
+dir="${BOX_DATA:-/var/lib/box}/backup"
+mkdir -p "$dir"
+curl -fsS "http://127.0.0.1:${API_PORT:-8760}/api/export" -o "$dir/lineup-$(date +%Y%m%d).json"
+ls -1t "$dir"/lineup-*.json | tail -n +9 | xargs -r rm --

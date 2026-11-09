@@ -1,0 +1,27 @@
+[Unit]
+Description=Retro Cable Box: the TV (Chromium kiosk in cage on tty1)
+After=box-api.service systemd-user-sessions.service
+Wants=box-api.service
+Conflicts=getty@tty1.service
+PartOf=box.target
+
+[Service]
+User=@BOX_USER@
+EnvironmentFile=/etc/box/box.env
+# A real login session on tty1 so cage gets a seat (logind sets XDG_RUNTIME_DIR).
+PAMName=login
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty-fail
+StandardOutput=journal
+StandardError=journal
+UtmpIdentifier=tty1
+UtmpMode=user
+ExecStart=/usr/local/bin/box-kiosk
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=box.target

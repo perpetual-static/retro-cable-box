@@ -1,0 +1,16 @@
+[Unit]
+Description=Retro Cable Box: MCP server for agents (:8750)
+After=box-temporal.service
+Wants=box-temporal.service
+PartOf=box.target
+
+[Service]
+User=@BOX_USER@
+EnvironmentFile=/etc/box/box.env
+WorkingDirectory=@BOX_DIR@/services/mcp
+ExecStart=@BOX_DIR@/node_modules/.bin/tsx src/server.ts
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=box.target

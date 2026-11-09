@@ -1,0 +1,31 @@
+{
+  "name": "@box/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./schedule": "./src/schedule.ts",
+    "./mutations": "./src/mutations.ts",
+    "./workflows": "./src/workflows.ts",
+    "./activities": "./src/activities.ts",
+    "./archive": "./src/archive.ts",
+    "./client": "./src/client.ts",
+    "./pairing": "./src/pairing.ts",
+    "./live": "./src/live.ts",
+    "./plugins": "./src/plugins.ts"
+  },
+  "scripts": {
+    "check": "tsc -p ."
+  },
+  "dependencies": {
+    "@temporalio/client": "^1.11.6",
+    "@temporalio/workflow": "^1.11.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@types/node": "^22.10.5"
+  },
+  "license": "PolyForm-Noncommercial-1.0.0"
+}

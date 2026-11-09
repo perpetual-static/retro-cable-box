@@ -1,0 +1,13 @@
+[Unit]
+Description=Retro Cable Box: front-panel channel readout (TM1637 on GPIO)
+After=box-api.service
+PartOf=box.target
+
+[Service]
+EnvironmentFile=/etc/box/box.env
+ExecStart=/usr/bin/python3 @BOX_DIR@/image/bin/box-led.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=box.target

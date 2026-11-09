@@ -1,0 +1,16 @@
+[Unit]
+Description=Retro Cable Box: Temporal worker (channels, ingest, health check)
+After=box-temporal.service
+Wants=box-temporal.service
+PartOf=box.target
+
+[Service]
+User=@BOX_USER@
+EnvironmentFile=/etc/box/box.env
+WorkingDirectory=@BOX_DIR@/services/worker
+ExecStart=@BOX_DIR@/node_modules/.bin/tsx src/worker.ts
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=box.target

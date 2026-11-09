@@ -1,0 +1,8 @@
+[Unit]
+Description=Retro Cable Box: back up the lineup (be kind, rewind)
+
+[Service]
+Type=oneshot
+User=@BOX_USER@
+EnvironmentFile=/etc/box/box.env
+ExecStart=/usr/local/bin/box-backup

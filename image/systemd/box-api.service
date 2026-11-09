@@ -1,0 +1,16 @@
+[Unit]
+Description=Retro Cable Box: guide API and TV app (:8760)
+After=box-temporal.service
+Wants=box-temporal.service
+PartOf=box.target
+
+[Service]
+User=@BOX_USER@
+EnvironmentFile=/etc/box/box.env
+WorkingDirectory=@BOX_DIR@/services/api
+ExecStart=@BOX_DIR@/node_modules/.bin/tsx src/server.ts
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=box.target

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="A retro cable box for your TV. Your AI agent programs the channels.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Narrow:wght@500;700&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+	<a class="brand" href="index.html">{{site}}</a>
+	<div class="osd">
+		<span class="ch">{{num}}</span>
+		<span class="chname">{{name}}</span>
+		<span class="clock" id="clock"></span>
+	</div>
+</header>
+<div class="layout">
+	<nav class="guide" aria-label="Pages">
+		<div class="row head"><span class="n">CH</span><span class="nm">PAGE</span></div>
+		{{nav}}
+		<a class="row repo" href="{{repo}}"><span class="n">⌂</span><span class="nm">SOURCE</span></a>
+	</nav>
+	<main class="screen">
+{{content}}
+	</main>
+</div>
+<footer class="bottom">{{tagline}} · NO MATTER WHERE YOU GO, THERE YOU ARE.</footer>
+<script>
+	(function () {
+		var el = document.getElementById('clock');
+		function tick() {
+			el.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+		}
+		tick();
+		setInterval(tick, 10000);
+	})();
+</script>
+</body>
+</html>

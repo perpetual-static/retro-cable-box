@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# The TV: Chromium in kiosk mode inside cage (a Wayland kiosk compositor).
+# Waits for the API, then opens the TV app; ?kiosk makes it turn on by itself.
+set -u
+port="${API_PORT:-8760}"
+for _ in $(seq 1 120); do
+  curl -fsS "http://127.0.0.1:$port/api/time" >/dev/null 2>&1 && break
+  sleep 1
+done
+browser=$(command -v chromium || command -v chromium-browser)
+exec cage -d -s -- "$browser" \
+  --kiosk --noerrdialogs --disable-infobars --no-first-run --disable-translate \
+  --autoplay-policy=no-user-gesture-required \
+  --check-for-update-interval=31536000 \
+  --ozone-platform=wayland \
+  --password-store=basic \
+  --disk-cache-size=268435456 \
+  --user-data-dir="$HOME/.config/box-chromium" \
+  "http://127.0.0.1:$port/?kiosk"

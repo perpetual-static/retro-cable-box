@@ -1,0 +1,106 @@
+# Local development for the Retro Cable Box.
+#
+#   task            # list tasks
+#   task dev        # whole stack: Temporal + worker + MCP + API + player. Ctrl-C stops all.
+#   task test       # unit tests (shared-clock math, reducers, archive helpers)
+#   task smoke      # end-to-end checks against a running stack
+#
+# Temporal state lives in .temporal/dev.db so channels survive restarts.
+# `task reset` deletes it and the next `task dev` imports the starter lineup again.
+
+version: '3'
+
+dotenv: ['.env']
+
+env:
+  TEMPORAL_ADDRESS: '{{.TEMPORAL_ADDRESS | default "127.0.0.1:7233"}}'
+  TEMPORAL_NAMESPACE: '{{.TEMPORAL_NAMESPACE | default "box"}}'
+  TEMPORAL_TASK_QUEUE: '{{.TEMPORAL_TASK_QUEUE | default "box"}}'
+  MCP_PORT: '{{.MCP_PORT | default "8750"}}'
+  API_PORT: '{{.API_PORT | default "8760"}}'
+
+vars:
+  TEMPORAL_PORT: '7233'
+  TEMPORAL_UI_PORT: '8233'
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  install:
+    desc: Install workspace dependencies
+    sources: [package.json, '**/package.json', pnpm-lock.yaml]
+    cmds:
+      - pnpm install
+
+  dev:
+    desc: 'Run the full stack (Temporal + worker + MCP + API + player). Ctrl-C stops all.'
+    deps: [install]
+    cmds:
+      - mkdir -p .temporal media
+      - cmd: |
+          bash -euo pipefail -c '
+          trap "echo; echo \"⏹  stopping…\"; kill 0" EXIT
+          temporal server start-dev --ip 127.0.0.1 --port {{.TEMPORAL_PORT}} --ui-port {{.TEMPORAL_UI_PORT}} \
+            --namespace "$TEMPORAL_NAMESPACE" --db-filename .temporal/dev.db --log-level error &
+          until temporal operator namespace describe -n "$TEMPORAL_NAMESPACE" --address "$TEMPORAL_ADDRESS" >/dev/null 2>&1; do sleep 0.5; done
+          echo "✔ Temporal ready   · UI     http://127.0.0.1:{{.TEMPORAL_UI_PORT}}/namespaces/$TEMPORAL_NAMESPACE"
+          pnpm --filter @box/worker dev &
+          pnpm --filter @box/mcp dev &
+          pnpm --filter @box/api dev &
+          pnpm --filter @box/player dev &
+          echo "✔ starting         · TV     http://127.0.0.1:5173"
+          echo "                   · MCP    http://127.0.0.1:$MCP_PORT/mcp"
+          echo "                   · API    http://127.0.0.1:$API_PORT/api/lineup"
+          wait
+          '
+
+  temporal:
+    desc: Temporal dev server only (UI on :8233)
+    cmds:
+      - mkdir -p .temporal
+      - temporal server start-dev --ip 127.0.0.1 --port {{.TEMPORAL_PORT}} --ui-port {{.TEMPORAL_UI_PORT}} --namespace "$TEMPORAL_NAMESPACE" --db-filename .temporal/dev.db
+
+  worker:
+    desc: Worker only (hot-reloads)
+    cmds: [pnpm --filter @box/worker dev]
+
+  mcp:
+    desc: MCP server only (hot-reloads)
+    cmds: [pnpm --filter @box/mcp dev]
+
+  api:
+    desc: API only (hot-reloads)
+    cmds: [pnpm --filter @box/api dev]
+
+  player:
+    desc: Player under Vite dev (proxies /api and /media to the API)
+    cmds: [pnpm --filter @box/player dev]
+
+  tv:
+    desc: 'Production-style: build the player, then the API serves it on :8760 (needs Temporal + worker)'
+    cmds:
+      - pnpm --filter @box/player build
+      - pnpm --filter @box/api start
+
+  test:
+    desc: Unit tests
+    cmds: [pnpm test]
+
+  check:
+    desc: Type-check every package
+    cmds: [pnpm -r check]
+
+  smoke:
+    desc: End-to-end smoke tests (worker + MCP + API). Needs `task dev` running.
+    cmds:
+      - pnpm --filter @box/worker smoke
+      - pnpm --filter @box/mcp smoke
+      - pnpm --filter @box/api smoke
+
+  reset:
+    desc: Delete local Temporal state; the next `task dev` starts a fresh box with the starter lineup
+    cmds:
+      - rm -rf .temporal
