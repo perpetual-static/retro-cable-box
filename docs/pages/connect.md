@@ -128,9 +128,13 @@ cannot complete that login. The pairing code is the gate.
 ## What an agent can do
 
 An agent can program channels, schedule shows, add trivia, post notices and
-install [plugins](plugins.html). It can add files from the box's media folder
-only. It cannot run commands on the box, and it cannot read other files.
-Plugins cannot make the box call devices on your network.
+install [plugins](plugins.html). It can add media from any URL, from servers
+on your network, and from files in the box's media folder. It cannot run
+commands on the box, and it cannot read files outside the media folder.
+Plugins from GitHub repos cannot make the box call devices on your network.
+
+What plays on your box is your choice. The box does not check rights. The
+starter lineup and the official channel packs are public domain.
 
 ## If the token leaks
 

@@ -305,7 +305,7 @@ export async function installPluginFrom(repo: string): Promise<PluginReport> {
 
 /** Install a manifest an agent wrote in place (no repo; it never updates on its own). */
 export async function installPluginManifest(m: PluginManifest): Promise<PluginReport> {
-	checkManifest(m);
+	checkManifest(m, { allowLan: true }); // the owner's agent wrote it
 	const before = (await queryLineup()).plugins?.find((p) => p.id === m.id);
 	if (before?.repo) throw new Error(`plugin "${m.id}" comes from ${before.repo}; remove it first to replace it with a local manifest`);
 	return applyManifest(m, undefined, undefined, before);

@@ -33,7 +33,7 @@ stream recipes.
 | --- | --- |
 | `owner/repo` | The latest release, then each new release in the nightly check |
 | `owner/repo@v1.2.0` | That release only; it never updates |
-| `https://…/retro-cable-box.json` | That file; it never updates |
+| A URL to a `retro-cable-box.json` (https, or http on your own network) | That file; it never updates |
 
 Other tools: `list_plugins`, `remove_plugin`, `update_plugins` (look for new
 releases now), and `test_stream` (show what the box will play for a URL).
@@ -109,8 +109,11 @@ that the owner removed does not come back.
 ## Rules
 
 - A plugin cannot run code.
-- A recipe cannot make the box call the owner's own network (LAN addresses,
-  `localhost`, `.local` names, tailnet addresses).
+- A plugin from a GitHub repo cannot make the box call the owner's own
+  network (LAN addresses, `localhost`, `.local` names, tailnet addresses),
+  because it updates itself from someone else's releases.
+- A manifest your agent writes in place, or one from a URL you give, can use
+  your own network: for example, a recipe for a media server on your LAN.
 - A recipe that matches every stream is refused.
 - When two plugins match the same URL, the one installed first wins.
 - A box holds up to 30 plugins; a plugin holds up to 20 recipes and 100

@@ -180,8 +180,15 @@ release asset, or as a file at the release tag):
 - **Updates.** The repo's releases control them. `owner/repo` installs the
   latest release and installs each new release in the nightly check.
   `owner/repo@tag` pins one release.
-- **Limits.** A plugin cannot run code, and it cannot make the box call the
-  owner's own network (LAN, loopback, tailnet, `.local`).
+- **Limits.** A plugin cannot run code. A plugin from a GitHub repo cannot
+  make the box call the owner's own network (LAN, loopback, tailnet,
+  `.local`), because it updates itself from someone else's releases. A
+  manifest the owner's agent writes in place, or one from a URL the owner
+  gives, can use the owner's network (for example, a media server on the LAN).
+- **Owner's choice.** The box does not check rights at runtime. The owner
+  decides what plays: their own files, servers on their network, or sources
+  they name. Only what ships with the box (the starter lineup) and the
+  official channel packs are vetted public domain.
 
 Agent tools: `install_plugin` (a repo, or a `manifest` written in place),
 `list_plugins`, `remove_plugin`, `update_plugins`, `test_stream`.

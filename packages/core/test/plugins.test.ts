@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { checkManifest, currentRelease, fetchManifest, isPrivateHost, newChannels, parseSource, recipeFor, resolveStream, toInstalled } from '../src/plugins';
+import { checkInstalled, checkManifest, currentRelease, fetchManifest, isPrivateHost, ownerChosen, newChannels, parseSource, recipeFor, resolveStream, toInstalled } from '../src/plugins';
 import { installPlugin, removePlugin, validateInstallPlugin } from '../src/mutations';
 import type { InstalledPlugin, LineupState, PluginManifest } from '../src/types';
 
@@ -28,9 +28,10 @@ describe('parseSource', () => {
 		expect(parseSource('https://github.com/someone/plugin.git')).toEqual({ kind: 'github', owner: 'someone', repo: 'plugin' });
 		expect(parseSource('https://github.com/someone/plugin/releases/tag/v3')).toMatchObject({ pin: 'v3' });
 	});
-	it('takes an https manifest URL but not one on the local network', () => {
+	it('takes a manifest URL the owner gives, including one on their own network', () => {
 		expect(parseSource('https://plugins.example/box.json')).toEqual({ kind: 'url', url: 'https://plugins.example/box.json' });
-		expect(() => parseSource('https://192.168.1.4/box.json')).toThrow(/own network/);
+		expect(parseSource('http://192.168.1.4/box.json')).toEqual({ kind: 'url', url: 'http://192.168.1.4/box.json' });
+		expect(() => parseSource('http://plugins.example/box.json')).toThrow(/https/);
 		expect(() => parseSource('ftp://x')).toThrow(/GitHub repo/);
 	});
 });
@@ -142,5 +143,26 @@ describe('GitHub releases', () => {
 	it('explains a repo with no release', async () => {
 		vi.stubGlobal('fetch', async () => new Response('{}', { status: 404 }));
 		await expect(currentRelease(parseSource('someone/plugin'))).rejects.toThrow(/no published release/);
+	});
+});
+
+describe("the owner's own network", () => {
+	afterEach(() => vi.unstubAllGlobals());
+	const lanRecipe = { match: 'jellyfin\\.local/live/(\\d+)', session: { url: 'http://nas.local:8096/session?ch={1}' }, playlist: 'http://nas.local:8096/{r.path}' };
+
+	it('is open to manifests the owner chose and closed to GitHub-repo plugins', () => {
+		expect(() => checkManifest({ ...MANIFEST, streams: [lanRecipe] }, { allowLan: true })).not.toThrow();
+		expect(() => checkManifest({ ...MANIFEST, streams: [lanRecipe] })).toThrow(/own network/);
+		expect(ownerChosen({})).toBe(true);
+		expect(ownerChosen({ repo: 'http://192.168.1.4/box.json' })).toBe(true);
+		expect(ownerChosen({ repo: 'someone/plugin' })).toBe(false);
+		expect(() => checkInstalled(installed({ repo: undefined, streams: [lanRecipe] }))).not.toThrow();
+		expect(() => checkInstalled(installed({ streams: [lanRecipe] }))).toThrow(/GitHub repo/);
+	});
+
+	it('lets an owner-written recipe resolve to a server on the LAN', async () => {
+		vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ path: 'stream/7/master.m3u8' })));
+		const r = await resolveStream([installed({ repo: undefined, streams: [lanRecipe] })], 'http://jellyfin.local/live/7');
+		expect(r.url).toBe('http://nas.local:8096/stream/7/master.m3u8');
 	});
 });

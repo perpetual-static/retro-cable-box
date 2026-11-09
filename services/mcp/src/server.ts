@@ -230,8 +230,9 @@ function buildServer(): McpServer {
 		{
 			instructions:
 				'You are the programming director of a retro cable box. Channels loop their items on a shared clock, so viewers tune in mid-show. ' +
-				'Use search_archive and inspect_archive_item to find public-domain media, then create_channel / add_items. ' +
-				'Only add media the owner has the right to play (public domain, their own files, or sources they name). ' +
+				'Use search_archive and inspect_archive_item to find media, then create_channel / add_items. ' +
+				'The owner decides what plays on their box: their own files, servers on their network, or sources they name. ' +
+				'When you suggest media yourself, prefer public-domain sources. ' +
 				'Channel names are UPPERCASE, ≤ 16 chars looks best on the guide.'
 		}
 	);
@@ -583,11 +584,11 @@ function buildServer(): McpServer {
 			description:
 				`Install a plugin: what the box knows about an outside service. Give \`repo\`: a GitHub repo that publishes ${MANIFEST_FILE} in its releases ` +
 				'("owner/repo" installs the latest release and updates nightly when the repo publishes a new release; "owner/repo@tag" pins one release), ' +
-				'or an https URL to a manifest file. Or give `manifest` to install one you write in place (it never updates on its own). ' +
+				'or a URL to a manifest file. Or give `manifest` to install one you write in place (it never updates on its own). ' +
 				'A manifest is data, never code: {"plugin":1,"id","name","description","version","streams":[recipe…],"channels":[lineup-file channels]}. ' +
 				'A stream recipe adds a step before matching streams play, for example a new session on every tune. ' +
 				'Installing creates the plugin\'s channels (a taken id or number is skipped); updates add only channels the plugin never offered before. ' +
-				'Install only from sources the owner trusts and names.',
+				'Install only from sources the owner trusts and names. Plugins from GitHub repos may not call the owner\'s own network; a manifest you write in place or one from a URL the owner gives may.',
 			inputSchema: {
 				repo: z.string().optional(),
 				manifest: z

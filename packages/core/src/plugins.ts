@@ -29,6 +29,12 @@
  *   {uuid}          a new random id
  *   {r.path.to.x}   a field of the session request's JSON response
  *
+ * The owner's own network. A plugin installed from a GitHub repo updates
+ * itself from someone else's releases, so it may not make the box call the
+ * owner's own network (LAN, loopback, tailnet, .local). A manifest the owner's
+ * agent writes in place, or one from a URL the owner gives, is the owner's
+ * own choice: it may use their network.
+ *
  * Browser-safe (fetch and crypto.randomUUID only).
  */
 
@@ -73,7 +79,7 @@ function templateHost(t: string): string | null {
 	return m ? m[1].replace(/:\d+$/, '') : null;
 }
 
-function checkRecipe(s: StreamRecipe, where: string): void {
+function checkRecipe(s: StreamRecipe, where: string, allowLan: boolean): void {
 	if (!s || typeof s !== 'object') fail(`${where} must be an object`);
 	if (typeof s.match !== 'string' || !s.match || s.match.length > 300) fail(`${where}.match must be 1–300 chars`);
 	let re: RegExp | undefined;
@@ -89,7 +95,7 @@ function checkRecipe(s: StreamRecipe, where: string): void {
 		if (typeof url !== 'string' || !HTTP.test(url) || url.length > PLUGIN_LIMITS.template) fail(`${where}.session.url must be an http(s) template`);
 		const host = templateHost(url);
 		if (!host) fail(`${where}.session.url must name its host directly`);
-		if (isPrivateHost(host!)) fail(`${where}.session.url may not call the owner's own network`);
+		if (!allowLan && isPrivateHost(host!)) fail(`${where}.session.url may not call the owner's own network (a plugin from a GitHub repo)`);
 		for (const [k, v] of Object.entries(s.session.headers ?? {})) {
 			if (!/^[A-Za-z0-9-]{1,64}$/.test(k) || typeof v !== 'string' || v.length > 500) fail(`${where}.session header "${k}" is not valid`);
 		}
@@ -97,12 +103,16 @@ function checkRecipe(s: StreamRecipe, where: string): void {
 	if (typeof s.playlist !== 'string' || s.playlist.length > PLUGIN_LIMITS.template) fail(`${where}.playlist must be a template ≤ ${PLUGIN_LIMITS.template} chars`);
 	if (!HTTP.test(s.playlist) && !/^\{(r\.[A-Za-z0-9_.]+|url)\}/.test(s.playlist)) fail(`${where}.playlist must be an http(s) template or start with a field`);
 	const host = templateHost(s.playlist);
-	if (host && isPrivateHost(host)) fail(`${where}.playlist may not point at the owner's own network`);
+	if (!allowLan && host && isPrivateHost(host)) fail(`${where}.playlist may not point at the owner's own network (a plugin from a GitHub repo)`);
 	if (/\{r\./.test(s.playlist) && !s.session) fail(`${where}.playlist uses {r.…} fields but the recipe has no session request`);
 }
 
-/** Throws with the reason when a manifest is malformed. */
-export function checkManifest(m: PluginManifest): void {
+/**
+ * Throws with the reason when a manifest is malformed. `allowLan`: the owner
+ * chose this manifest themselves (written in place, or a URL they gave), so it
+ * may use their own network. Plugins from GitHub repos may not.
+ */
+export function checkManifest(m: PluginManifest, opts: { allowLan?: boolean } = {}): void {
 	if (!m || typeof m !== 'object') fail('the manifest must be a JSON object');
 	if (m.plugin !== 1) fail('the manifest must say "plugin": 1');
 	if (!SLUG.test(m.id ?? '')) fail('the plugin id must be lowercase kebab-case');
@@ -113,11 +123,21 @@ export function checkManifest(m: PluginManifest): void {
 	if (m.channels !== undefined && !Array.isArray(m.channels)) fail('channels must be a list');
 	if ((m.streams ?? []).length > PLUGIN_LIMITS.streamsPerPlugin) fail(`a plugin holds at most ${PLUGIN_LIMITS.streamsPerPlugin} stream recipes`);
 	if ((m.channels ?? []).length > PLUGIN_LIMITS.channelsPerPlugin) fail(`a plugin offers at most ${PLUGIN_LIMITS.channelsPerPlugin} channels`);
-	(m.streams ?? []).forEach((s, i) => checkRecipe(s, `streams[${i}]`));
+	(m.streams ?? []).forEach((s, i) => checkRecipe(s, `streams[${i}]`, !!opts.allowLan));
 	(m.channels ?? []).forEach((c, i) => {
 		if (!c || typeof c !== 'object' || typeof c.id !== 'string' || !Number.isInteger(c.num)) fail(`channels[${i}] needs an id and a num`);
 	});
 	if (!(m.streams ?? []).length && !(m.channels ?? []).length) fail('the plugin has no streams and no channels');
+}
+
+/** True when the owner chose the plugin directly: no repo, or a manifest URL (not a GitHub repo that updates itself). */
+export function ownerChosen(p: Pick<InstalledPlugin, 'repo'>): boolean {
+	if (!p.repo) return true;
+	try {
+		return parseSource(p.repo).kind === 'url';
+	} catch {
+		return false;
+	}
 }
 
 /** Throws with the reason when an installed plugin (as the lineup holds it) is malformed. */
@@ -127,7 +147,7 @@ export function checkInstalled(p: InstalledPlugin): void {
 	if (typeof p.name !== 'string' || !p.name.trim() || p.name.length > 40) fail('the plugin name must be 1–40 chars');
 	if ((p.description ?? '').length > 300 || (p.version ?? '').length > 32) fail('the plugin description or version is too long');
 	if (!Array.isArray(p.streams) || p.streams.length > PLUGIN_LIMITS.streamsPerPlugin) fail(`streams must be a list of at most ${PLUGIN_LIMITS.streamsPerPlugin}`);
-	p.streams.forEach((s, i) => checkRecipe(s, `streams[${i}]`));
+	p.streams.forEach((s, i) => checkRecipe(s, `streams[${i}]`, ownerChosen(p)));
 	if (!Array.isArray(p.offeredChannels) || p.offeredChannels.some((id) => typeof id !== 'string')) fail('offeredChannels must be a list of channel ids');
 	if ((p.repo ?? '').length > 300 || (p.release ?? '').length > 100) fail('repo or release is too long');
 }
@@ -165,11 +185,12 @@ export function parseSource(repo: string): PluginSource {
 	if (short) return { kind: 'github', owner: short[1], repo: short[2], ...(short[3] ? { pin: short[3] } : {}) };
 	const gh = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:\/(?:tree|releases\/tag)\/([\w./-]+))?\/?$/.exec(r);
 	if (gh) return { kind: 'github', owner: gh[1], repo: gh[2], ...(gh[3] ? { pin: gh[3] } : {}) };
-	if (/^https:\/\/[^/]+\/.+\.json(\?.*)?$/i.test(r)) {
-		if (isPrivateHost(new URL(r).hostname)) fail("a plugin manifest may not come from the owner's own network");
+	// A manifest URL the owner gives: plain http is fine on their own network.
+	if (/^https?:\/\/[^/]+\/.+\.json(\?.*)?$/i.test(r)) {
+		if (/^http:/i.test(r) && !isPrivateHost(new URL(r).hostname)) fail('a manifest URL on the internet must use https');
 		return { kind: 'url', url: r };
 	}
-	return fail('give a GitHub repo ("owner/repo", "owner/repo@tag" or its github.com URL) or an https URL to a manifest .json file');
+	return fail('give a GitHub repo ("owner/repo", "owner/repo@tag" or its github.com URL) or a URL to a manifest .json file');
 }
 
 const UA = { 'user-agent': 'RetroCableBox/0.1' };
@@ -183,14 +204,14 @@ async function getText(url: string, what: string, accept?: string): Promise<stri
 	return text;
 }
 
-function parseManifest(text: string, url: string): PluginManifest {
+function parseManifest(text: string, url: string, allowLan: boolean): PluginManifest {
 	let m: PluginManifest;
 	try {
 		m = JSON.parse(text) as PluginManifest;
 	} catch {
 		return fail(`${url} is not valid JSON`);
 	}
-	checkManifest(m);
+	checkManifest(m, { allowLan });
 	return m;
 }
 
@@ -218,7 +239,7 @@ export async function fetchManifest(src: PluginSource, release: { tag: string; a
 	if (src.kind === 'url') url = src.url;
 	else if (release?.assetUrl) url = release.assetUrl;
 	else url = `https://raw.githubusercontent.com/${src.owner}/${src.repo}/${encodeURIComponent(release!.tag)}/${MANIFEST_FILE}`;
-	return parseManifest(await getText(url, `${MANIFEST_FILE}${release ? ` in release ${release.tag}` : ''}`), url);
+	return parseManifest(await getText(url, `${MANIFEST_FILE}${release ? ` in release ${release.tag}` : ''}`), url, src.kind === 'url');
 }
 
 /** The channels in a manifest that this install has not offered before. */
@@ -277,10 +298,11 @@ export async function resolveStream(plugins: InstalledPlugin[] | undefined, url:
 	const hit = recipeFor(plugins, url);
 	if (!hit) return { url, plugin: null };
 	const { plugin, recipe, groups } = hit;
+	const lan = ownerChosen(plugin);
 	let response: unknown;
 	if (recipe.session) {
 		const target = fill(recipe.session.url, { url, groups }, true);
-		if (isPrivateHost(new URL(target).hostname)) fail(`${plugin.name}: the session request may not call the owner's own network`);
+		if (!lan && isPrivateHost(new URL(target).hostname)) fail(`${plugin.name}: the session request may not call the owner's own network`);
 		const r = await fetch(target, { headers: recipe.session.headers, signal: AbortSignal.timeout(PLUGIN_LIMITS.timeoutMs) });
 		if (!r.ok) fail(`${plugin.name}: the session request answered HTTP ${r.status}`);
 		const body = await r.text();
@@ -293,6 +315,6 @@ export async function resolveStream(plugins: InstalledPlugin[] | undefined, url:
 	}
 	const out = fill(recipe.playlist, { url, groups, response }, false);
 	if (!HTTP.test(out)) fail(`${plugin.name}: the playlist template did not make an http(s) URL`);
-	if (isPrivateHost(new URL(out).hostname)) fail(`${plugin.name}: the playlist may not point at the owner's own network`);
+	if (!lan && isPrivateHost(new URL(out).hostname)) fail(`${plugin.name}: the playlist may not point at the owner's own network`);
 	return { url: out, plugin: plugin.id };
 }
