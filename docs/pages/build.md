@@ -40,7 +40,7 @@ into it from the front. Print settings and assembly are in
    right and the HDMI edge faces the back.
 5. Optional: connect the LED readout (see below). Slide the module down into
    the posts behind the faceplate window.
-6. Slide the body into the cover from the front. Put two M2.5 x 8 screws up
+6. Slide the body into the cover from the front. Put two M2.5 x 6 screws up
    through the feet.
 7. Flash the microSD card and install the software. See
    [Set up the software](setup.html).

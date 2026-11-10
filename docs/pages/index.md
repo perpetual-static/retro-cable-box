@@ -30,7 +30,7 @@ retro cable lineup. Your AI agent programs the channels.
 
 ## Get one
 
-- **Build it.** The parts cost about $100. See [Build the box](build.html) and
+- **Build it.** The parts cost about $160. See [Build the box](build.html) and
   [Set up the software](setup.html).
 - **Buy it.** A finished box, ready to plug in. See [Buy a box](buy.html).
 

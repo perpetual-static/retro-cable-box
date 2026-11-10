@@ -24,7 +24,7 @@ The case has two parts. Both come from `generate.py` (see below).
 
 ## Assembly
 
-1. Screw the Pi to the standoffs with four M2.5 x 5 screws. The USB and
+1. Screw the Pi to the standoffs with four M2.5 x 6 screws. The USB and
    Ethernet end faces right, and the HDMI edge faces the back.
 2. Slide the TM1637 LED module down into the two slotted posts behind the
    faceplate window, with the display against the faceplate. Modules differ a
@@ -33,7 +33,7 @@ The case has two parts. Both come from `generate.py` (see below).
    around the window.
 4. Slide the body into the cover from the front until the faceplate touches
    the cover.
-5. Put two M2.5 x 8 screws up through the feet into the lock bosses.
+5. Put two M2.5 x 6 screws up through the feet into the lock bosses.
 
 The microSD card is under the Pi. Remove the two lock screws and slide the
 body out to change it.

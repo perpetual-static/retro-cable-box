@@ -93,7 +93,9 @@ function bomSection() {
 	const sum = (list) => list.reduce((n, p) => n + Number(p.approx_usd || 0) * Number(p.qty || 1), 0);
 	const required = parts.filter((p) => p.required === 'yes');
 	const row = (p) =>
-		`<tr><td>${esc(p.part)}</td><td class="n">${esc(p.qty)}</td><td class="n">$${esc(p.approx_usd)}</td><td>${esc(p.notes)}</td></tr>`;
+		`<tr><td>${p.link ? `<a href="${esc(p.link)}">${esc(p.part)}</a>` : esc(p.part)}${
+			p.alt_link ? ` <a class="dim" href="${esc(p.alt_link)}">(also)</a>` : ''
+		}</td><td class="n">${esc(p.qty)}</td><td class="n">$${esc(p.approx_usd)}</td><td>${esc(p.notes)}</td></tr>`;
 	return [
 		'<table class="bom"><thead><tr><th>Part</th><th class="n">Qty</th><th class="n">About</th><th>Notes</th></tr></thead><tbody>',
 		...required.map(row),

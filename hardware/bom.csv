@@ -1,11 +1,12 @@
-part,qty,approx_usd,required,notes
-Raspberry Pi 5 (4 GB),1,60,yes,A Pi 4 (4 GB) also works; the Pi 5 has more room for the guide and live TV decode
-Raspberry Pi active cooler,1,5,yes,The Pi 5 runs Chromium all day
-Raspberry Pi 27 W USB-C power supply,1,12,yes,The official supply; weak supplies cause video stutter
-microSD card (32 GB A2),1,8,yes,A2 class for app speed
-Micro-HDMI to HDMI cable,1,6,yes,Use HDMI 0 (the port next to USB-C)
-3D-printed case,1,4,yes,Filament cost; files in hardware/case
-M2.5 screws and heat-set inserts,1,2,yes,To hold the Pi in the case
-FLIRC USB IR receiver,1,25,no,Any remote works through it; most TVs work with HDMI-CEC and need no receiver
-TM1637 4-digit LED module,1,3,no,The front-panel channel readout
-Jumper wires (female to female),4,1,no,For the LED module
+part,qty,approx_usd,required,link,alt_link,notes
+Raspberry Pi 5 (4 GB),1,110,yes,https://www.raspberrypi.com/products/raspberry-pi-5/,https://www.adafruit.com/product/5812,A Pi 4 (4 GB) also works; Pi prices went up in 2026 because of memory costs
+Raspberry Pi Active Cooler,1,5,yes,https://www.raspberrypi.com/products/active-cooler/,https://www.adafruit.com/product/5815,The Pi 5 runs Chromium all day
+Raspberry Pi 27 W USB-C power supply,1,12,yes,https://www.raspberrypi.com/products/27w-power-supply/,https://www.adafruit.com/product/5814,The official supply; weak supplies cause video stutter
+Raspberry Pi SD card (32 GB A2),1,10,yes,https://www.raspberrypi.com/products/sd-cards/,https://www.digikey.com/en/products/detail/raspberry-pi/SC1628/24627139,Part SC1628; A2 class for app speed
+Micro-HDMI to HDMI cable,1,6,yes,https://www.raspberrypi.com/products/micro-hdmi-to-standard-hdmi-a-cable/,https://www.adafruit.com/product/4302,Use HDMI 0 (the port next to USB-C)
+3D-printed case,1,4,yes,https://github.com/perpetual-static/retro-cable-box/tree/main/hardware/case,,Filament cost; wood-fill PLA for the cover
+M2.5 heat-set inserts (M2.5 x 4),6,1,yes,https://www.prusa3d.com/product/threaded-inserts-m2-5-standard-100-pcs/,https://www.3djake.com/cnc-kitchen/threaded-inserts-m25-standard,CNC Kitchen; the case holes are 3.6 mm for this insert; about $12 for 100
+M2.5 x 6 mm socket head screws,6,1,yes,https://www.mcmaster.com/91292A010/,,McMaster 91292A010; 18-8 stainless; sold in packs
+FLIRC USB IR receiver,1,25,no,https://flirc.tv/products/flirc-usb-receiver,,Any remote works through it; most TVs work with HDMI-CEC and need no receiver
+TM1637 4-digit LED module (0.36 in),1,3,no,https://www.jameco.com/z/TM1637-JVP-Jameco-ValuePro-TM1637-4-Bits-Digital-Red-LED-Display-Module-for-Arduino-7-Segment-0-36-4-Digit-Clock-Anode-Serial-Driver-Board_2325423.html,,The front-panel channel readout; many sellers make the same 42 x 24 mm module
+Female-to-female jumper wires,1,4,no,https://www.adafruit.com/product/266,,A pack of 40; the LED module uses 4
