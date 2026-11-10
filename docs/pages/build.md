@@ -18,20 +18,30 @@ Prices are approximate. Check them before you buy.
 
 ## Case files
 
+![The case: a wood-grain cover over a black faceplate](assets/case.jpg)
+
+The cover is the top and both sides, with a wood-grain surface in the model
+itself, so the grain prints. The body (floor, faceplate and back panel) slides
+into it from the front. Print settings and assembly are in
+[PRINTING.md](https://github.com/perpetual-static/retro-cable-box/blob/main/hardware/case/PRINTING.md).
+
 <!-- generated:case -->
 
 ## Assemble
 
-> The case design is still in progress. These steps follow the planned
-> design and will change with the first printed prototype.
+> The first printed prototype can change these steps.
 
-1. Print the case parts. Use the settings in the case folder, if it has them.
-2. Put the heat-set inserts into the case body with a soldering iron.
+1. Print the cover and the body. See
+   [PRINTING.md](https://github.com/perpetual-static/retro-cable-box/blob/main/hardware/case/PRINTING.md).
+2. Put six M2.5 heat-set inserts into the body with a soldering iron: four in
+   the Pi standoffs and two in the lock bosses, from below.
 3. Attach the active cooler to the Pi. Connect its fan cable to the FAN port.
-4. Put the Pi in the case body and attach it with the M2.5 screws.
-5. Optional: connect the LED readout (see below). Put the module in the front
-   bezel.
-6. Close the case.
+4. Attach the Pi to the standoffs with four M2.5 screws. The USB end faces
+   right and the HDMI edge faces the back.
+5. Optional: connect the LED readout (see below). Slide the module down into
+   the posts behind the faceplate window.
+6. Slide the body into the cover from the front. Put two M2.5 x 8 screws up
+   through the feet.
 7. Flash the microSD card and install the software. See
    [Set up the software](setup.html).
 8. Connect the micro-HDMI cable to **HDMI 0** (the port next to USB-C) and to
