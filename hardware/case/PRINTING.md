@@ -2,6 +2,10 @@
 
 The case has two parts. Both come from `generate.py` (see below).
 
+> **Status.** A test print confirms that the cover and the body fit together.
+> The port openings, the insert holes and the LED holder are not yet tested
+> with the real parts.
+
 | Part | File | Material | Orientation |
 | --- | --- | --- | --- |
 | Wood-grain cover | `case-cover.stl` | Wood-fill PLA or brown PLA | Stand it on its front edge |

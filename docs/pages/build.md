@@ -79,4 +79,6 @@ Turn it on with `sudo systemctl enable --now box-led`.
 
 > **Status.** The software install is tested in an arm64 Debian container.
 > The kiosk display, HDMI audio, HDMI-CEC and the LED readout are not yet
-> tested on real hardware.
+> tested on real hardware. A test print of the case confirms that the cover
+> and the body fit together. The port openings and the insert holes are not
+> yet tested with the real parts.
