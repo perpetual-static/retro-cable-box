@@ -91,9 +91,12 @@ def slot_y(cx, cz, w, h, y0, y1):
     return cs.extrude(y1 - y0).rotate((-90, 0, 0)).translate((cx, y0, cz))
 
 
-def slot_x(cy, cz, w, h, x0, x1):
-    """A rounded slot through a wall in the yz plane (axis along x)."""
-    r = min(w, h) / 2
+def slot_x(cy, cz, w, h, x0, x1, r=None):
+    """A rounded slot through a wall in the yz plane (axis along x).
+
+    r: the corner radius. The default rounds the ends fully.
+    """
+    r = min(w, h) / 2 if r is None else r
     # After the turn about y, the section's first axis is z and its second is y.
     cs = CrossSection.square((h - 2 * r, w - 2 * r), center=True).offset(r, join_type=_ROUND)
     return cs.extrude(x1 - x0).rotate((0, 90, 0)).translate((x0, cy, cz))
@@ -206,9 +209,11 @@ def cover():
     c = Manifold.batch_boolean([shell, rails, skin], _ADD)
 
     cuts = []
-    # Window on the right side for the Pi's USB and Ethernet ports.
+    # Window on the right side for the Pi's USB and Ethernet ports. Small
+    # corner radius: fully round ends would block the corners of the outer
+    # ports (the USB stack is 16 mm tall and runs close to the board edge).
     y0, y1 = pi_xy(0, PI_W + 1.0)[1], pi_xy(0, -1.0)[1]
-    cuts.append(slot_x((y0 + y1) / 2, PI_TOP + 8.6, y1 - y0, 19.5, W - T - 1, W + 1).refine_to_length(50))
+    cuts.append(slot_x((y0 + y1) / 2, PI_TOP + 8.6, y1 - y0, 19.5, W - T - 1, W + 1, r=2.5).refine_to_length(50))
     # Vents in the top, over the Pi's fan. Long along y so they print as
     # narrow bridges when the cover stands on its front edge.
     for i in range(9):
