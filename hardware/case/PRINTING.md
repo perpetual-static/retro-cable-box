@@ -16,8 +16,10 @@ The case has two parts. Both come from `generate.py` (see below).
 - Stand the cover on its front edge. Then the top and both sides are walls,
   and the grain prints at full nozzle detail. Do not print it flat.
 - Use no supports. The vents and the port window bridge less than 20 mm.
-- Use a brim of 8 mm. The cover is tall, and its edge touches the bed only
-  along a 3 mm wall, so it can come loose without a brim.
+- Use a brim on both sides of the wall, 10 mm wide (Bambu Studio: Brim type
+  "Outer and inner brim"). The cover is tall, and its edge touches the bed
+  only along a 3 mm wall, so it can come loose without a brim. Wipe the plate
+  with dish soap, and on a textured plate add glue stick.
 - Three thin ties cross the port window in the right side. They hold the strip
   of wall under the window while it prints. Do not remove them in the slicer.
   After printing, cut them out with flush cutters and sand the ends.
