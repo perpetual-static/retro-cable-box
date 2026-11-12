@@ -40,6 +40,7 @@ BASE_Z0 = RAIL_H  # the floor sits on the rails
 BASE_T = 2.4
 BASE_Z1 = BASE_Z0 + BASE_T
 INNER_TOP = H - T - CLR  # highest point of anything inside
+TIES, TIE_W = 3, 1.2  # breakaway print ties across the side port window
 FACE_T = 4.0  # faceplate thickness, in front of the cover (y < 0)
 BACK_T = 3.0
 
@@ -223,7 +224,17 @@ def cover():
     for lx in (LOCK_X, W - LOCK_X):
         cuts.append(cyl_z(lx, LOCK_Y, -1, RAIL_H + 1, SCREW_D))
         cuts.append(cyl_z(lx, LOCK_Y, -1, 0.8, 5.2))  # a shallow counterbore for the head
-    return c - Manifold.batch_boolean(cuts, _ADD)
+    c = c - Manifold.batch_boolean(cuts, _ADD)
+
+    # Print ties across the port window. Without them, the strip of wall under
+    # the window is a free fin 58 mm tall while the cover prints on its front
+    # edge; it wobbles, the nozzle knocks it, and the print fails. The ties sit
+    # on the inner part of the wall so the cut marks do not show. Cut them out
+    # with flush cutters after printing.
+    zc = PI_TOP + 8.6
+    ties = [box(W - T, ty - TIE_W / 2, zc - 9.75 - 0.5, W - 1.2, ty + TIE_W / 2, zc + 9.75 + 0.5)
+            for ty in np.linspace(y0, y1, TIES + 2)[1:-1]]
+    return Manifold.batch_boolean([c, *ties], _ADD)
 
 
 # ── body ───────────────────────────────────────────────────────────────────

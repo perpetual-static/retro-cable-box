@@ -16,6 +16,13 @@ The case has two parts. Both come from `generate.py` (see below).
 - Stand the cover on its front edge. Then the top and both sides are walls,
   and the grain prints at full nozzle detail. Do not print it flat.
 - Use no supports. The vents and the port window bridge less than 20 mm.
+- Use a brim of 8 mm. The cover is tall, and its edge touches the bed only
+  along a 3 mm wall, so it can come loose without a brim.
+- Three thin ties cross the port window in the right side. They hold the strip
+  of wall under the window while it prints. Do not remove them in the slicer.
+  After printing, cut them out with flush cutters and sand the ends.
+- Print the outer walls at 40 mm/s or slower, and turn on Z-hop. A fast nozzle
+  can catch on the grain and knock the cover over.
 - Use 0.16 mm layers, 3 walls, and turn off "fuzzy skin" and ironing.
 - The grain is 0.45 mm deep. A wood-fill filament with a light sanding and an
   oil stain shows the grain best.
