@@ -20,7 +20,7 @@ The case has two parts. Both come from `generate.py` (see below).
   "Outer and inner brim"). The cover is tall, and its edge touches the bed
   only along a 3 mm wall, so it can come loose without a brim. Wipe the plate
   with dish soap, and on a textured plate add glue stick.
-- Three thin ties cross the port window in the right side. They hold the strip
+- Three thin ties cross the port window in the left side. They hold the strip
   of wall under the window while it prints. Do not remove them in the slicer.
   After printing, cut them out with flush cutters and sand the ends.
 - Print the outer walls at 40 mm/s or slower, and turn on Z-hop. A fast nozzle

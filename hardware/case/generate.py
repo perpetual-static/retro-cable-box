@@ -47,7 +47,10 @@ BACK_T = 3.0
 # ── Raspberry Pi 5 (also fits a Pi 4) ──────────────────────────────────────
 PI_L, PI_W, PI_T = 85.0, 56.0, 1.6
 STANDOFF = 6.0
-PI_X0 = W - T - 2.5 - PI_L  # the USB and Ethernet end faces the right side
+# Component side up, with the HDMI and USB-C edge at the back: then the USB and
+# Ethernet end faces the left side.
+PI_X0 = T + 2.5
+PI_X1 = PI_X0 + PI_L
 PI_Y1 = D - BACK_T - 1.5  # the HDMI and USB-C edge faces the back
 PI_Z0 = BASE_Z1 + STANDOFF  # underside of the board
 PI_TOP = PI_Z0 + PI_T
@@ -55,8 +58,13 @@ PI_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]  # from the HDMI
 
 
 def pi_xy(px, py):
-    """Pi board coordinates (x along the long edge, y in from the HDMI edge)."""
-    return PI_X0 + px, PI_Y1 - py
+    """Pi board coordinates to case coordinates.
+
+    px runs along the long edge from the USB-C end, py in from the HDMI edge
+    (the layout of the official mechanical drawing, component side up). The
+    board turns 180 degrees in the case, so both axes reverse.
+    """
+    return PI_X1 - px, PI_Y1 - py
 
 
 # TM1637 4-digit LED module (0.36" display): PCB 42 x 24, display 30 x 14 x 7.2.
@@ -210,15 +218,15 @@ def cover():
     c = Manifold.batch_boolean([shell, rails, skin], _ADD)
 
     cuts = []
-    # Window on the right side for the Pi's USB and Ethernet ports. Small
+    # Window on the left side for the Pi's USB and Ethernet ports. Small
     # corner radius: fully round ends would block the corners of the outer
     # ports (the USB stack is 16 mm tall and runs close to the board edge).
     y0, y1 = pi_xy(0, PI_W + 1.0)[1], pi_xy(0, -1.0)[1]
-    cuts.append(slot_x((y0 + y1) / 2, PI_TOP + 8.6, y1 - y0, 19.5, W - T - 1, W + 1, r=2.5).refine_to_length(50))
+    cuts.append(slot_x((y0 + y1) / 2, PI_TOP + 8.6, y1 - y0, 19.5, -1, T + 1, r=2.5).refine_to_length(50))
     # Vents in the top, over the Pi's fan. Long along y so they print as
     # narrow bridges when the cover stands on its front edge.
     for i in range(9):
-        cx = PI_X0 + 16.0 + i * 5.0
+        cx = pi_xy(16.0 + i * 5.0, 0)[0]
         cuts.append(slot_z(cx, PI_Y1 - 30.0, 2.4, 40.0, H - T - 1, H + 1))
     # Lock screw holes up through each rail.
     for lx in (LOCK_X, W - LOCK_X):
@@ -232,7 +240,7 @@ def cover():
     # on the inner part of the wall so the cut marks do not show. Cut them out
     # with flush cutters after printing.
     zc = PI_TOP + 8.6
-    ties = [box(W - T, ty - TIE_W / 2, zc - 9.75 - 0.5, W - 1.2, ty + TIE_W / 2, zc + 9.75 + 0.5)
+    ties = [box(1.2, ty - TIE_W / 2, zc - 9.75 - 0.5, T, ty + TIE_W / 2, zc + 9.75 + 0.5)
             for ty in np.linspace(y0, y1, TIES + 2)[1:-1]]
     return Manifold.batch_boolean([c, *ties], _ADD)
 
@@ -279,7 +287,7 @@ def body():
     cuts = []
     # Floor vents under the Pi.
     for i in range(10):
-        cuts.append(slot_z(PI_X0 + 12 + i * 6.0, PI_Y1 - PI_W / 2, 2.6, 36, BASE_Z0 - 1, BASE_Z1 + 1))
+        cuts.append(slot_z(pi_xy(12 + i * 6.0, 0)[0], PI_Y1 - PI_W / 2, 2.6, 36, BASE_Z0 - 1, BASE_Z1 + 1))
     # Pi standoff holes for M2.5 heat-set inserts.
     for hx, hy in PI_HOLES:
         x, y = pi_xy(hx, hy)
